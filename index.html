@@ -1,0 +1,1342 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Vale de Caja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: one centered working column; the form is drawn as the blue paper "Vale de Caja" itself, lists and the supervisor tray sit below the same tabs. */
+:root {
+  --ground: #eef4fa;
+  --paper: #dcebf9;
+  --field: #f8fbff;
+  --ink: #1d6fc2;
+  --ink-strong: #0e4f97;
+  --text: #13253a;
+  --muted: #566b83;
+  --line: #93bce4;
+  --rule: #c9dcef;
+  --ok: #1b7446; --ok-bg: #dff3e7;
+  --warn: #9a5b00; --warn-bg: #fdefd6;
+  --bad: #b3261e; --bad-bg: #fbe2df;
+  --paid: #4537a3; --paid-bg: #e6e2fb;
+  --sig-bg: #fbfdff;
+  --sig-ink: #123f7a;
+  --shadow: 0 1px 2px rgba(14,79,151,.08), 0 8px 24px rgba(14,79,151,.08);
+  --f-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --f-body: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0b131d; --paper: #12212f; --field: #0e1a26;
+    --ink: #6aaef0; --ink-strong: #a3cdfa; --text: #e2ecf6; --muted: #91a6bd;
+    --line: #2f5379; --rule: #213a54;
+    --ok: #6fd39c; --ok-bg: #12301f; --warn: #f2b85e; --warn-bg: #352710;
+    --bad: #ff8f85; --bad-bg: #3a1714; --paid: #b9aeff; --paid-bg: #241f47;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0b131d; --paper: #12212f; --field: #0e1a26;
+  --ink: #6aaef0; --ink-strong: #a3cdfa; --text: #e2ecf6; --muted: #91a6bd;
+  --line: #2f5379; --rule: #213a54;
+  --ok: #6fd39c; --ok-bg: #12301f; --warn: #f2b85e; --warn-bg: #352710;
+  --bad: #ff8f85; --bad-bg: #3a1714; --paid: #b9aeff; --paid-bg: #241f47;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--text); font: 400 15px/1.5 var(--f-body); }
+.wrap { max-width: 860px; margin: 0 auto; padding-inline: 16px; padding-block: 0 48px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* top bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ground); border-bottom: 1px solid var(--rule); }
+.top-in { max-width: 860px; margin: 0 auto; padding: 12px 16px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.brand { display: flex; flex-direction: column; line-height: 1.1; margin-right: auto; }
+.brand b { font: 800 22px/1 var(--f-display); letter-spacing: .04em; color: var(--ink-strong); text-transform: uppercase; }
+.brand span { font-size: 12.5px; color: var(--muted); letter-spacing: .02em; }
+.who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.who img { width: 30px; height: 30px; border-radius: 50%; flex: none; }
+.who .nm { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+.role { font: 600 11px/1 var(--f-body); text-transform: uppercase; letter-spacing: .08em; padding: 4px 7px; border-radius: 4px; background: var(--paper); color: var(--ink-strong); }
+.tabs { flex-basis: 100%; display: flex; gap: 4px; overflow-x: auto; }
+.tab { border: 0; background: none; padding: 10px 12px 11px; font-weight: 600; color: var(--muted); border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--ink-strong); border-bottom-color: var(--ink); }
+.tab .ct { font: 500 12px var(--f-mono); margin-left: 4px; color: var(--muted); }
+
+.notice { margin-top: 18px; padding: 12px 14px; border-radius: 8px; background: var(--warn-bg); color: var(--text); border: 1px solid var(--rule); }
+.notice b { color: var(--warn); }
+
+/* ---------- the vale ---------- */
+.vale { margin-top: 20px; background: var(--paper); border-radius: 6px; padding: 22px clamp(14px, 4vw, 30px) 26px; box-shadow: var(--shadow); color: var(--text); }
+.v-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 14px 20px; }
+.v-title { font: 800 clamp(36px, 8vw, 54px)/.9 var(--f-display); color: var(--ink); letter-spacing: .01em; text-transform: uppercase; margin: 0; }
+.v-num { font: 600 13px var(--f-mono); color: var(--ink-strong); margin-top: 6px; letter-spacing: .04em; }
+.usd { display: flex; align-items: center; gap: 8px; border: 2px solid var(--ink); border-radius: 10px; background: var(--field); padding: 6px 12px; min-width: 0; flex: 0 1 240px; }
+.usd label { font: 800 15px var(--f-display); color: var(--ink); letter-spacing: .04em; }
+.usd input, .usd output { border: 0; background: none; width: 100%; min-width: 0; font: 600 24px var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; padding: 2px 0; }
+.usd input:focus { outline: none; }
+.usd:focus-within { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 25%, transparent); }
+
+.v-meta { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 12px; margin-top: 18px; }
+.box { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.box .in { border: 2px solid var(--ink); border-radius: 10px; background: var(--field); padding: 7px 10px; min-height: 42px; display: flex; align-items: center; }
+.box .in input { border: 0; background: none; width: 100%; min-width: 0; padding: 0; }
+.box .in input:focus { outline: none; }
+.box:focus-within .in { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 25%, transparent); }
+.box > span { font: 600 15px var(--f-display); color: var(--ink); letter-spacing: .03em; padding-left: 4px; }
+
+.panel { margin-top: 16px; border: 2px solid var(--ink); border-radius: 16px; background: var(--field); padding: 10px clamp(12px, 3vw, 22px) 14px; }
+.ln { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 10px 0 6px; border-bottom: 1.5px dotted var(--line); }
+.ln > label, .ln > .lb { font: 600 15px var(--f-body); color: var(--ink-strong); white-space: nowrap; }
+.ln input, .ln select, .ln textarea { flex: 1 1 220px; min-width: 0; border: 0; background: none; padding: 2px 0; }
+.ln input:focus, .ln select:focus, .ln textarea:focus { outline: none; }
+.ln:focus-within { border-bottom-color: var(--ink); border-bottom-style: solid; }
+.ln textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
+.ln .val { flex: 1 1 220px; min-width: 0; }
+.letras { font: 600 14px var(--f-mono); letter-spacing: .02em; color: var(--text); }
+.letras.empty { color: var(--muted); font-weight: 500; }
+.ln .suf { font-weight: 600; color: var(--ink-strong); }
+.ln select { cursor: pointer; }
+
+.v-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; margin-top: 22px; align-items: end; }
+.sig { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.sig .cap { text-align: center; font: 600 16px var(--f-display); letter-spacing: .03em; color: var(--ink); border-top: 2px solid var(--ink); padding-top: 4px; }
+.stamp { min-height: 96px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 2px; padding: 6px; }
+.stamp .st { font: 800 22px/1 var(--f-display); letter-spacing: .12em; text-transform: uppercase; padding: 6px 12px; border: 2.5px solid currentColor; border-radius: 6px; transform: rotate(-4deg); }
+.stamp small { color: var(--muted); font-size: 12.5px; }
+.stamp .note { font-size: 13px; color: var(--text); max-width: 32ch; }
+.c-pendiente { color: var(--warn); } .c-aprobado { color: var(--ok); } .c-rechazado { color: var(--bad); } .c-pagado { color: var(--paid); }
+.pad-wrap { position: relative; }
+canvas.pad { display: block; width: 100%; height: 110px; background: var(--sig-bg); border-radius: 8px; border: 1.5px dashed var(--line); touch-action: none; cursor: crosshair; }
+.pad-hint { position: absolute; inset: 0; display: grid; place-items: center; color: #7d93ab; font-size: 13px; pointer-events: none; }
+.pad-tools { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
+.firma-img { display: block; width: 100%; height: 96px; object-fit: contain; background: var(--sig-bg); border-radius: 8px; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; }
+.btn { border: 0; border-radius: 8px; padding: 11px 18px; font-weight: 600; cursor: pointer; background: var(--ink); color: var(--field); }
+.btn:hover { filter: brightness(1.08); }
+.btn:disabled { opacity: .55; cursor: progress; }
+.btn.ghost { background: transparent; color: var(--ink-strong); border: 1.5px solid var(--line); }
+.btn.ok { background: var(--ok); color: var(--field); }
+.btn.bad { background: var(--bad); color: var(--field); }
+.btn.paid { background: var(--paid); color: var(--field); }
+.btn.sm { padding: 6px 10px; font-size: 13px; }
+.link { border: 0; background: none; padding: 0; color: var(--ink-strong); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.err { color: var(--bad); font-weight: 600; font-size: 14px; }
+
+/* ---------- lists ---------- */
+.sec-h { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; margin: 26px 0 10px; }
+.sec-h h2 { font: 800 26px/1 var(--f-display); text-transform: uppercase; letter-spacing: .03em; color: var(--ink-strong); margin: 0; text-wrap: balance; }
+.sec-h p { margin: 0; color: var(--muted); font-size: 14px; }
+.month { margin-top: 18px; }
+.month-h { display: flex; justify-content: space-between; gap: 12px; font: 600 13px var(--f-body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 0 4px 6px; border-bottom: 1px solid var(--rule); }
+.month-h span:last-child { font-family: var(--f-mono); letter-spacing: 0; color: var(--text); }
+.row { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto auto; gap: 4px 14px; align-items: center; padding: 12px 4px; border-bottom: 1px solid var(--rule); cursor: pointer; background: none; border-left: 0; border-right: 0; border-top: 0; width: 100%; text-align: left; }
+.row:hover { background: color-mix(in srgb, var(--paper) 60%, transparent); }
+.row .n { font: 600 13px var(--f-mono); color: var(--ink-strong); }
+.row .c { min-width: 0; }
+.row .c b { display: block; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .c small { color: var(--muted); font-size: 13px; }
+.row .m { font: 600 15px var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; }
+.pill { display: inline-block; font: 600 11.5px/1 var(--f-body); text-transform: uppercase; letter-spacing: .07em; padding: 5px 8px; border-radius: 999px; white-space: nowrap; }
+.p-pendiente { color: var(--warn); background: var(--warn-bg); }
+.p-aprobado { color: var(--ok); background: var(--ok-bg); }
+.p-rechazado { color: var(--bad); background: var(--bad-bg); }
+.p-pagado { color: var(--paid); background: var(--paid-bg); }
+.empty { padding: 28px 18px; text-align: center; color: var(--muted); border: 1.5px dashed var(--line); border-radius: 10px; margin-top: 14px; }
+.empty b { display: block; color: var(--text); font-size: 16px; margin-bottom: 4px; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.fld { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.fld input, .fld select { border: 1.5px solid var(--line); background: var(--field); border-radius: 8px; padding: 8px 10px; font-size: 14px; text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--text); min-width: 0; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.tile { background: var(--field); border: 1px solid var(--rule); border-radius: 10px; padding: 10px 12px; }
+.tile span { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; }
+.tile b { display: block; font: 600 20px var(--f-mono); font-variant-numeric: tabular-nums; margin-top: 2px; }
+.tile small { color: var(--muted); font-size: 12.5px; }
+.tile.t-pend b { color: var(--warn); } .tile.t-apr b { color: var(--ok); } .tile.t-pag b { color: var(--paid); }
+.tbl-wrap { overflow-x: auto; margin-top: 14px; border: 1px solid var(--rule); border-radius: 10px; background: var(--field); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; background: var(--paper); position: sticky; top: 0; }
+td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; }
+th.num { text-align: right; }
+td.wrap { white-space: normal; min-width: 220px; max-width: 340px; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: color-mix(in srgb, var(--paper) 60%, transparent); }
+.flag { color: var(--bad); font-weight: 600; }
+
+/* ---------- validación / programación ---------- */
+.ln.col { display: block; }
+.acts { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0 4px; }
+.act { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 10px; cursor: pointer; background: var(--field); font-weight: 600; font-size: 14px; }
+.act input { flex: none; width: 16px; height: 16px; accent-color: var(--ink); }
+.act small { font-weight: 500; color: var(--muted); }
+.act:has(input:checked) { border-color: var(--ink); background: color-mix(in srgb, var(--ink) 12%, var(--field)); }
+.act.used { opacity: .55; cursor: not-allowed; }
+.check { margin-top: 10px; padding: 9px 12px; border-radius: 8px; font-size: 14px; background: var(--paper); border: 1px solid var(--rule); }
+.check.ok { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+.check.warn { background: var(--warn-bg); color: var(--warn); border-color: transparent; }
+.check.bad { background: var(--bad-bg); color: var(--bad); border-color: transparent; }
+.vchip { display: inline-block; font: 600 11.5px/1 var(--f-body); letter-spacing: .05em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; margin-right: 4px; white-space: nowrap; }
+.vchip.ok { color: var(--ok); background: var(--ok-bg); }
+.vchip.warn { color: var(--warn); background: var(--warn-bg); }
+.vchip.bad { color: var(--bad); background: var(--bad-bg); }
+.vbox { margin-top: 14px; padding: 10px 14px; border-radius: 8px; background: var(--field); border: 1px solid var(--rule); font-size: 14px; display: grid; gap: 6px; }
+.add-prog { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-top: 12px; padding: 12px; background: var(--paper); border-radius: 10px; }
+.btn.x { padding: 3px 9px; font-size: 13px; background: none; color: var(--bad); border: 1px solid var(--line); }
+
+/* ---------- login ---------- */
+body.locked > header.top, body.locked > main { display: none; }
+.login { position: fixed; inset: 0; z-index: 40; background: var(--ground); display: grid; place-items: center; padding: 16px; overflow-y: auto; }
+.login-card { width: 100%; max-width: 380px; background: var(--paper); border-radius: 10px; padding: 24px 22px; box-shadow: var(--shadow); display: grid; gap: 14px; }
+.login-card .fld input { font-size: 16px; padding: 10px 12px; }
+.folder { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; font-size: 13.5px; color: var(--muted); }
+.folder.ok span { color: var(--ok); font-weight: 600; }
+.hint { margin: 0; font-size: 12.5px; color: var(--muted); }
+.logout { border: 1.5px solid var(--line); background: none; border-radius: 6px; padding: 4px 9px; font-size: 12.5px; font-weight: 600; color: var(--ink-strong); cursor: pointer; }
+.av { width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--field); display: grid; place-items: center; font: 700 12px var(--f-body); flex: none; }
+
+/* ---------- overlay ---------- */
+.ov { position: fixed; inset: 0; z-index: 20; background: rgba(8, 22, 38, .55); display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; padding: calc(24px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px)); }
+.ov-card { width: 100%; max-width: 760px; }
+.ov-card .vale { margin-top: 0; }
+.ov-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; background: var(--field); border-radius: 0 0 8px 8px; padding: 12px 16px; border-top: 1px solid var(--rule); }
+.ov-bar .grp { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ov-bar textarea { width: 100%; border: 1.5px solid var(--line); border-radius: 8px; background: var(--ground); padding: 8px 10px; min-height: 64px; }
+.ro { flex: 1 1 220px; min-width: 0; font-weight: 500; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink-strong); color: var(--ground); padding: 10px 16px; border-radius: 8px; font-weight: 600; z-index: 30; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
+
+@media (max-width: 620px) {
+  .v-meta { grid-template-columns: 1fr; }
+  .v-foot { grid-template-columns: 1fr; }
+  .v-foot .sig-vto { order: 2; }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .row { grid-template-columns: 52px minmax(0, 1fr) auto; }
+  .row .pill { grid-column: 2 / 4; justify-self: start; }
+  .usd { flex-basis: 100%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .toast { animation: rise .2s ease-out; }
+  @keyframes rise { from { transform: translate(-50%, 8px); opacity: 0; } }
+}
+</style>
+
+</head><body class="locked">
+
+<div class="login" id="login">
+  <form class="login-card" id="login-form" autocomplete="off">
+    <div class="brand"><b>Vale de Caja</b><span>Técnicos de Calidad · Dep. Larvas · Naturisa</span></div>
+    <label class="fld">Usuario (nombre y apellido)<input id="l-user" autocomplete="username" placeholder="Ej.: Franklin Lojan"></label>
+    <label class="fld">Clave<input id="l-pass" type="password" autocomplete="current-password" inputmode="numeric" placeholder="••••••"></label>
+    <button class="btn" type="submit">Ingresar</button>
+    <div class="err" id="l-err" role="alert"></div>
+    <p class="hint" id="l-hint">Escribe tu nombre y apellido y tu clave. Si no la tienes, pídesela al supervisor. Funciona en el computador o el celular.</p>
+  </form>
+</div>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><b>Vale de Caja</b><span>Técnicos de Calidad · Dep. Larvas · Naturisa</span></div>
+    <div class="who" id="who"><span class="role" id="who-status">Conectando…</span></div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" id="t-nuevo" data-tab="nuevo" aria-selected="true">Nuevo vale</button>
+      <button class="tab" role="tab" id="t-mis" data-tab="mis" aria-selected="false">Mis vales<span class="ct" id="ct-mis"></span></button>
+      <button class="tab" role="tab" id="t-prog" data-tab="prog" aria-selected="false" hidden>Programación</button>
+      <button class="tab" role="tab" id="t-bandeja" data-tab="bandeja" aria-selected="false" hidden>Bandeja de aprobación<span class="ct" id="ct-band"></span></button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="notice" id="notice" hidden></div>
+
+  <!-- NUEVO VALE -->
+  <section id="tab-nuevo">
+    <form class="vale" id="form" novalidate autocomplete="off">
+      <div class="v-head">
+        <div>
+          <h1 class="v-title">Vale de Caja</h1>
+          <div class="v-num" id="f-num">N° —</div>
+        </div>
+        <div class="usd">
+          <label for="f-monto">US$</label>
+          <input id="f-monto" type="number" inputmode="decimal" step="0.01" min="0.01" placeholder="0.00">
+        </div>
+      </div>
+      <div class="v-meta">
+        <label class="box"><div class="in"><input id="f-ciudad" list="ciudades" placeholder="Ciudad donde se recibió"></div><span>Ciudad</span></label>
+        <label class="box"><div class="in"><input id="f-fecha" type="text" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa"></div><span>Día · Mes · Año</span></label>
+      </div>
+      <datalist id="ciudades">
+        <option value="Guayaquil"><option value="Machala"><option value="Santa Elena"><option value="Salinas"><option value="La Libertad">
+        <option value="Playas"><option value="Posorja"><option value="San Pablo"><option value="Monteverde"><option value="Manta"><option value="Puerto Bolívar">
+      </datalist>
+      <div class="panel">
+        <div class="ln"><label for="f-benef">Yo / Nosotros:</label><input id="f-benef" placeholder="Nombre de quien recibe el dinero"></div>
+        <div class="ln"><label for="f-recibide">Recibí(mos) de:</label><input id="f-recibide" value="NATURISA S.A."></div>
+        <div class="ln"><span class="lb">El valor de:</span><span class="val letras empty" id="f-letras">Se escribe solo al ingresar el monto</span><span class="suf">dólares.</span></div>
+        <div class="ln" id="ln-tec" hidden><label for="f-tec">Técnico:</label><select id="f-tec"></select></div>
+        <div class="ln col"><span class="lb">Actividades programadas:</span><div class="acts" id="f-acts"></div></div>
+        <div class="check" id="f-check" aria-live="polite"></div>
+        <div class="ln"><label for="f-cat">Tipo de actividad:</label>
+          <select id="f-cat">
+            <option>REVISION LABORATORIOS</option><option>COSECHA LABORATORIO</option><option>PEAJES Y ALIMENTACION</option>
+          </select>
+        </div>
+        <div class="ln" id="ln-rubro" hidden><label for="f-rubro">Rubro:</label>
+          <select id="f-rubro"><option>PEAJES</option><option>ALIMENTACION</option></select>
+        </div>
+        <div class="ln"><label for="f-concepto">Por concepto de:</label><textarea id="f-concepto" rows="2" placeholder="Ej.: MOVILIZACION REVISION LABORATORIOS LQ4, MR1"></textarea></div>
+        <div class="ln" id="ln-just" hidden><label for="f-just">Justificación:</label><textarea id="f-just" rows="2" placeholder="Explica por qué no está en la programación o por qué supera la tarifa"></textarea></div>
+      </div>
+      <div class="v-foot">
+        <div class="sig sig-vto">
+          <div class="stamp"><span class="st c-pendiente">Por revisar</span><small>Lo firma Keller Herrera al aprobar</small></div>
+          <div class="cap">Vto. Bno.</div>
+        </div>
+        <div class="sig">
+          <div class="pad-wrap"><canvas class="pad" id="f-firma" aria-label="Recuadro para firmar con el dedo o el mouse"></canvas><div class="pad-hint" id="pad-hint">Firme aquí</div></div>
+          <div class="cap">Recibí Conforme</div>
+          <div class="pad-tools"><span>Firma con el dedo o el mouse</span><button type="button" class="link" id="pad-clear">Borrar firma</button></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="f-submit" type="submit" disabled>Conectando…</button>
+        <button class="btn ghost" id="f-cancel" type="button" hidden>Cancelar edición</button>
+        <span class="err" id="f-err" role="alert"></span>
+      </div>
+    </form>
+  </section>
+
+  <!-- MIS VALES -->
+  <section id="tab-mis" hidden>
+    <div class="sec-h"><h2>Mis vales</h2><p id="mis-sum"></p></div>
+    <div id="mis-list"></div>
+  </section>
+
+  <!-- PROGRAMACION -->
+  <section id="tab-prog" hidden>
+    <div class="sec-h"><h2>Programación diaria</h2><p>Los técnicos solo registran vales sobre estas actividades</p></div>
+    <form class="add-prog" id="p-form" autocomplete="off">
+      <label class="fld">Fecha<input type="text" id="p-fecha" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" size="10"></label>
+      <label class="fld">Técnico<select id="p-tec"></select></label>
+      <label class="fld">Laboratorio<input id="p-lab" list="p-labs" size="8" placeholder="LQ4"></label>
+      <datalist id="p-labs"></datalist>
+      <label class="fld">Actividad<select id="p-act"><option>REVISION</option><option>COSECHO</option><option>LIBRE</option></select></label>
+      <button class="btn" type="submit">Agregar</button>
+      <button class="btn ghost" type="button" id="p-import">Importar Excel</button>
+      <input type="file" id="p-file" accept=".xlsx,.xls" hidden>
+      <span class="err" id="p-err" role="alert"></span>
+    </form>
+    <div class="filters" style="margin-top:14px">
+      <label class="fld">Mes<input type="month" id="p-mes"></label>
+      <label class="fld">Técnico<select id="p-ftec"><option value="">Todos</option></select></label>
+      <label class="fld">Vale<select id="p-fvale"><option value="">Todos</option><option value="sin">Sin vale</option><option value="con">Con vale</option></select></label>
+    </div>
+    <div id="p-table"></div>
+  </section>
+
+  <!-- BANDEJA SUPERVISOR -->
+  <section id="tab-bandeja" hidden>
+    <div class="sec-h"><h2>Bandeja de aprobación</h2><p>Vales de todos los técnicos</p></div>
+    <div class="filters">
+      <label class="fld">Mes<input type="month" id="b-mes"></label>
+      <label class="fld">Técnico<select id="b-tec"><option value="">Todos</option></select></label>
+      <label class="fld">Estado<select id="b-est"><option value="">Todos</option><option value="pendiente">Pendiente</option><option value="aprobado">Aprobado</option><option value="rechazado">Rechazado</option></select></label>
+      <button class="btn ghost" id="b-export" type="button" hidden>Exportar detalle</button>
+      <button class="btn" id="b-export2" type="button" hidden>Exportar formato de gastos</button>
+    </div>
+    <div class="tiles" id="b-tiles"></div>
+    <div id="b-table"></div>
+  </section>
+</main>
+
+<div class="ov" id="ov" hidden><div class="ov-card" id="ov-card"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="config.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  function h(tag, attrs, ...kids) {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+    for (const c of kids.flat()) if (c != null && c !== false) el.append(c instanceof Node ? c : document.createTextNode(String(c)));
+    return el;
+  }
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  };
+
+  // ---------- formatting ----------
+  const money = n => 'US$ ' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const pad4 = n => 'N° ' + String(n || 0).padStart(4, '0');
+  const fdate = s => { if (!s) return '—'; const [y, m, d] = s.split('-'); return `${d}/${m}/${y}`; };
+  const today = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+  const monthLabel = ym => { const [y, m] = ym.split('-').map(Number); const s = new Intl.DateTimeFormat('es-EC', { month: 'long', year: 'numeric' }).format(new Date(y, m - 1, 1)); return s.charAt(0).toUpperCase() + s.slice(1); };
+  const ESTADOS = { pendiente: 'Pendiente', aprobado: 'Aprobado', rechazado: 'Rechazado' };
+
+  // ---------- catálogos (Cuadro valores movilización, hoja TARIFA REVISIONES) ----------
+  const ROSTER = [
+    { k: 'FRANKLIN LOJAN', n: 'Franklin Lojan', t: ['franklin', 'lojan'] },
+    { k: 'HUMBERTO REYES', n: 'Humberto Reyes', t: ['humberto', 'reyes'] },
+    { k: 'YORDAN URETA', n: 'Yordan Ureta', t: ['yordan', 'ureta'] },
+    { k: 'JINSON VERA', n: 'Jinson Vera', t: ['jinson', 'vera'] },
+    { k: 'FELIX RODRIGUEZ', n: 'Félix Rodríguez', t: ['felix', 'rodriguez'] },
+  ];
+  const norm = s => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const matchTec = name => { const n = norm(name); return (ROSTER.find(r => r.t.every(t => n.includes(t))) || {}).k || null; };
+  const tecNombre = k => (ROSTER.find(r => r.k === k) || {}).n || k || '—';
+  // Laboratorios con las siglas y nombres del sistema (get_subsidiaries + get_supplier_subsidiary LARVAS_TERCEROS). Formato: sigla|nombre|zona.
+  // Zona vacía = pendiente de definir en el cuadro de tarifas; esos laboratorios salen como 'Sin zona/tarifa' y el aprobador revisa el monto.
+  const LABS_RAW = [
+'LQ1|Larviquest 1|4',
+    'LQ2|Larviquest 2|4',
+    'LQ3|Larviquest 3|1',
+    'LQ4|Larviquest 4|1',
+    'ACN|ACUANORTE|',
+    'ACT|LABORATORIO-ACUATECSA ACUACULTURA & TECNOLOGIA S.A|',
+    'AQG|AQUA-GEN S.A.|',
+    'AQV|AQUANOVA S.A.S.|7',
+    'ARP|PONCE MONROY JORGE ARTURO|',
+    'ASE|ACUESEMILLAS - SEAQUEST S.A. (AQUEST)|4',
+    'BIL|VERA ORMAZA ALIRIO MANUEL|',
+    'BMA|LABORATORIO BAMAR S.A.|',
+    'BUL|BUBBALAB|',
+    'CIN|CORPORACION INDUSTRIAL COMERCIAL CINCO CORPINCOMCINCO S.A.|4',
+    'CMA|CULTIVOS MARINOS CULMARINSA S.A|',
+    'DTT|FLOTCORP S.A.|5',
+    'ECV|GUARECUCO ANDRADE SLAICER STELL NICATOR|3',
+    'ENA|LABORATORIO EUNOIA|',
+    'ESC|ESCOLAR|4',
+    'FMA|FMA|6',
+    'GBO|GABSO EXPORT SHRIMP S.A.S.|3',
+    'GGS|GUTIERREZ SALAZAR PAULO ANDRES|',
+    'GN1|LABORATORIO DE LARVAS GENESIS PS LABGENPS S.A.|',
+    'GN2|PENA RON BOLIVAR ANTONIO|',
+    'LAG|ALVARADO GUAMAN LUIS ALFREDO|',
+    'LRP|JENNY YSABEL POZO GONZABAY|',
+    'MBL|NARCISO MISAEL BUSTE LOOR|',
+    'MCL|CANDEL AGUIRRE CARLOTA ELOISA|6',
+    'ML1|MEGALATINA S.A.|',
+    'ML2|INVERSIONES ACUICOLAS RODRIGUEZ LARA INAROLA S.A.|',
+    'MR1|PALACIOS TERAN MONICA DEL CONSUELO|5',
+    'MR2|YAGUAL VERA LARISA ISABEL|6',
+    'MRB|MACROBIO|2',
+    'NAR|NARIHUAL S.A.S.|5',
+    'OCL|OCEANLAB LABORATORIOS DEL OCEANO S.A.|1',
+    'PES|PLUSLARVA S.A.|',
+    'PR1|CIAPROLARCAM S.A.|',
+    'PR2|CIAPROLARCAM S.A. (BASE 2)|',
+    'PR3|ORLANDO JOSELITO JIMENEZ ARGOTI (PROLARCAM BASE 3)|',
+    'PR4|JIMENEZ ARGOTI ORLANDO JOSELITO|',
+    'PR5|JIMENEZ APOLINARIO MICHELLE STEFANNY|',
+    'PSL|PESCALAB S.A.S.|',
+    'RML|RAMILARV S.A.S.|4',
+    'SEM|SEMACUA|6',
+    'SIM|SIMECON|3',
+    'SL1|SANLAB BSO S.A.|',
+    'SL2|SANLAB EVA S.A.|',
+    'SL3|SANLAB FSA S.A.S.|',
+    'SL4|HEBER DURANGO|',
+    'SL5|SANLAB ABSA|',
+    'SL6|SANLAB ABSA|',
+    'TCS|TECNOLOGIA YSERVICIOSTECSERV S.A.|',
+    'TIB|TIBALLOSA S.A.|6',
+    'VCU|VIACUA|',
+    'VLZ|VELEZ GONZABAY JENNIFER ELIANA|1',
+    'YOR|ORRALA AQUINO YORDY JOSE|'
+  ];
+  const ZONA_LAB = {}, LAB_NOM = {};
+  LABS_RAW.forEach(x => { const [c, n, z] = x.split('|'); LAB_NOM[c] = n; if (z) ZONA_LAB[c] = +z; });
+  const labNombre = c => LAB_NOM[(c || '').toUpperCase().trim()] || '';
+  // tarifa ida y vuelta en US$: fila = técnico, columna = zona S1…S7 del laboratorio
+  const TARIFA = {
+    'HUMBERTO REYES': [5, 10, 15, 15, 30, 30, 50],
+    'FELIX RODRIGUEZ': [10, 5, 10, 15, 25, 25, 50],
+    'FRANKLIN LOJAN': [15, 5, 5, 10, 25, 25, 50],
+    'JINSON VERA': [15, 10, 10, 5, 15, 15, 50],
+  };
+  const zonaDe = lab => { const l = (lab || '').toUpperCase().trim(); return ZONA_LAB[l] || ZONA_LAB[l.replace(/\d+$/, '')] || null; };
+  // Tope = zona más cara entre los laboratorios visitados. Solo revisiones y técnicos con tarifa.
+  // Por indicación de jefatura, por ahora NO se sugieren ni validan tarifas por zona (poner en true para reactivar).
+  const TARIFAS_ACTIVAS = false;
+  function tope(tec, labs, tipo) {
+    if (!TARIFAS_ACTIVAS || tipo !== 'REVISION' || !TARIFA[tec] || !labs.length) return { v: null, sin: [] };
+    const sin = [], vals = [];
+    for (const l of labs) { const z = zonaDe(l); if (z) vals.push(TARIFA[tec][z - 1]); else sin.push(l); }
+    return { v: vals.length ? Math.max(...vals) : null, sin };
+  }
+  const ACT_TXT = { REVISION: 'Revisión', COSECHO: 'Cosecha', LIBRE: 'Libre', PEAJES: 'Peajes y alimentación' };
+
+  // Monto en letras (español, formato contable: "VEINTICINCO CON 50/100")
+  const U = ['', 'UNO', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE', 'DIEZ', 'ONCE', 'DOCE', 'TRECE', 'CATORCE', 'QUINCE', 'DIECISÉIS', 'DIECISIETE', 'DIECIOCHO', 'DIECINUEVE', 'VEINTE', 'VEINTIUNO', 'VEINTIDÓS', 'VEINTITRÉS', 'VEINTICUATRO', 'VEINTICINCO', 'VEINTISÉIS', 'VEINTISIETE', 'VEINTIOCHO', 'VEINTINUEVE'];
+  const D = ['', '', '', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
+  const C = ['', 'CIENTO', 'DOSCIENTOS', 'TRESCIENTOS', 'CUATROCIENTOS', 'QUINIENTOS', 'SEISCIENTOS', 'SETECIENTOS', 'OCHOCIENTOS', 'NOVECIENTOS'];
+  function hasta999(n) {
+    if (n === 100) return 'CIEN';
+    const c = Math.floor(n / 100), r = n % 100, parts = [];
+    if (c) parts.push(C[c]);
+    if (r) parts.push(r < 30 ? U[r] : D[Math.floor(r / 10)] + (r % 10 ? ' Y ' + U[r % 10] : ''));
+    return parts.join(' ');
+  }
+  const apocope = s => s.replace(/VEINTIUNO$/, 'VEINTIÚN').replace(/UNO$/, 'UN');
+  function enteroLetras(n) {
+    if (n === 0) return 'CERO';
+    const mill = Math.floor(n / 1e6), miles = Math.floor((n % 1e6) / 1000), resto = n % 1000, parts = [];
+    if (mill) parts.push(mill === 1 ? 'UN MILLÓN' : apocope(hasta999(mill)) + ' MILLONES');
+    if (miles) parts.push(miles === 1 ? 'MIL' : apocope(hasta999(miles)) + ' MIL');
+    if (resto) parts.push(hasta999(resto));
+    return parts.join(' ');
+  }
+  function montoLetras(v) {
+    const cents = Math.round(Number(v) * 100);
+    if (!(cents > 0)) return '';
+    return `${enteroLetras(Math.floor(cents / 100))} CON ${String(cents % 100).padStart(2, '0')}/100`;
+  }
+
+  // ---------- state ----------
+  const S = {
+    user: null, db: null, dl: null, uid: null, me: null, isAdmin: false, ready: false,
+    items: new Map(), aprob: new Map(), prog: new Map(), tec: null, autoMonto: true, autoConcepto: true, autoCat: true, subs: new Map(), techIds: new Set(),
+    names: {}, editing: null, detail: null, tab: 'nuevo',
+  };
+
+  function estadoDe(uid, id) {
+    const v = S.items.get(uid)?.get(id), a = S.aprob.get(uid)?.get(id);
+    if (!v || !a || a.rev !== v.rev) return 'pendiente';
+    return a.estado in ESTADOS ? a.estado : 'pendiente';
+  }
+  const nombreDe = (uid, v) => S.names[uid] || (v?.tecnico ? tecNombre(v.tecnico) : '') || v?.beneficiario || 'Técnico';
+
+  // ---------- validación recalculada (no se confía en las banderas guardadas) ----------
+  function validacion(v) {
+    const ids = v.actividades || [];
+    const ok = ids.length > 0 && ids.every(id => {
+      const a = S.prog.get(id);
+      return a ? (a.tecnico === v.tecnico && a.fecha === v.fecha) : (!!v.programada && (v.fecha || '') < S.progDesde);
+    });
+    const t = tope(v.tecnico, v.labs || [], v.tipoActividad || '');
+    return { prog: ok, tope: t.v, excede: t.v != null && Number(v.monto) > t.v + 0.001 };
+  }
+  function valChips(v) {
+    const x = validacion(v), box = h('span', {});
+    box.append(h('span', { class: 'vchip ' + (x.prog ? 'ok' : 'warn'), text: x.prog ? 'Programada' : 'Sin programación' }));
+    if (x.excede) box.append(h('span', { class: 'vchip bad', text: 'Excede tarifa' }));
+    else if (x.tope != null) box.append(h('span', { class: 'vchip ok', text: 'Dentro de tarifa' }));
+    return box;
+  }
+  function valTexto(v) {
+    const x = validacion(v);
+    return [x.prog ? 'Programada' : 'Sin programación', x.excede ? 'Excede tarifa (' + x.tope + ')' : (x.tope != null ? 'Dentro de tarifa' : '')].filter(Boolean).join(' · ');
+  }
+  function valBox(v) {
+    const x = validacion(v), lines = [];
+    lines.push(h('div', {}, valChips(v)));
+    if ((v.labs || []).length) lines.push(h('div', {}, h('b', { text: 'Actividades: ' }), v.labs.join(', ') + (v.tipoActividad ? ' (' + (ACT_TXT[v.tipoActividad] || 'Mixta') + ')' : '') + (x.tope != null ? ' · tarifa máx. ' + money(x.tope) : '')));
+    if (v.justificacion) lines.push(h('div', {}, h('b', { text: 'Justificación: ' }), v.justificacion));
+    return h('div', { class: 'vbox' }, lines);
+  }
+
+  // ---------- toast / notices ----------
+  let toastT;
+  function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3200); }
+  function notice(html) { const n = $('#notice'); n.replaceChildren(...html); n.hidden = !html.length; }
+  function writeErr(e) {
+    const c = e && e.code;
+    if (c === 'permiso') return 'No tienes permiso para esta acción.';
+    if (c === 'bloqueado') return 'Este vale ya fue aprobado; no se puede modificar ni eliminar.';
+    if (c === 'red') return 'No hay conexión con el servidor. Revisa tu internet e intenta de nuevo.';
+    if (c === 'grande') return 'El vale pesa demasiado (la firma). Bórrala y firma de nuevo con trazos más cortos.';
+    if (c === 'disco') return 'No se pudo comunicar con el servidor. Intenta de nuevo.';
+    if (c === 'invalid_argument') return 'No tienes permiso para guardar en esta página. Pide al supervisor que te comparta el enlace como Colaborador.';
+    if (c === 'quota_exceeded') return 'Se llenó el espacio de la base de vales. Avisa al supervisor para archivar vales antiguos.';
+    if (c === 'unavailable' || c === 'resource_exhausted') return 'No hubo conexión con el servidor. Espera un momento e intenta de nuevo.';
+    return 'No se pudo guardar (' + (c || 'error') + '). Intenta de nuevo.';
+  }
+
+  // ---------- tabs ----------
+  function setTab(t) {
+    S.tab = t;
+    for (const b of document.querySelectorAll('.tab')) b.setAttribute('aria-selected', String(b.dataset.tab === t));
+    for (const s of ['nuevo', 'mis', 'prog', 'bandeja']) $('#tab-' + s).hidden = s !== t;
+    store.set('vc-tab', t);
+    if (t === 'nuevo') { requestAnimationFrame(pad.resize); renderActs(); }
+  }
+  document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+
+  // ---------- signature pad ----------
+  const pad = (() => {
+    const c = $('#f-firma'), ctx = c.getContext('2d'), hint = $('#pad-hint');
+    let drawing = false, dirty = false, last = null;
+    const ink = () => getComputedStyle(document.documentElement).getPropertyValue('--sig-ink').trim() || '#123f7a';
+    function setup() { const dpr = window.devicePixelRatio || 1; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.2; ctx.strokeStyle = ink(); }
+    function resize() {
+      const r = c.getBoundingClientRect(); if (!r.width) return;
+      const dpr = window.devicePixelRatio || 1, w = Math.round(r.width * dpr), hh = Math.round(r.height * dpr);
+      if (c.width === w && c.height === hh) return;
+      const keep = dirty ? c.toDataURL() : null;
+      c.width = w; c.height = hh; setup();
+      if (keep) draw(keep);
+    }
+    function draw(url) { const img = new Image(); img.onload = () => { const r = c.getBoundingClientRect(); const s = Math.min(r.width / img.width, r.height / img.height); const w = img.width * s, hh = img.height * s; ctx.drawImage(img, (r.width - w) / 2, (r.height - hh) / 2, w, hh); }; img.src = url; }
+    const pos = e => { const r = c.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+    c.addEventListener('pointerdown', e => { e.preventDefault(); c.setPointerCapture(e.pointerId); drawing = true; last = pos(e); ctx.beginPath(); ctx.arc(last[0], last[1], 1.1, 0, Math.PI * 2); ctx.fillStyle = ink(); ctx.fill(); mark(); });
+    c.addEventListener('pointermove', e => { if (!drawing) return; const p = pos(e); ctx.beginPath(); ctx.moveTo(...last); ctx.lineTo(...p); ctx.stroke(); last = p; });
+    const end = () => { drawing = false; };
+    c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+    function mark() { dirty = true; hint.hidden = true; }
+    function clear() { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); ctx.restore(); dirty = false; hint.hidden = false; }
+    function exportPng() {
+      if (!dirty) return null;
+      const o = document.createElement('canvas'); o.width = 480; o.height = 140;
+      const r = c.width / c.height, W = r > 480 / 140 ? 480 : 140 * r, H = r > 480 / 140 ? 480 / r : 140;
+      o.getContext('2d').drawImage(c, (480 - W) / 2, (140 - H) / 2, W, H);
+      return o.toDataURL('image/png');
+    }
+    function load(url) { clear(); if (url) { mark(); draw(url); } }
+    new ResizeObserver(resize).observe(c);
+    return { resize, clear, exportPng, load };
+  })();
+  $('#pad-clear').addEventListener('click', () => pad.clear());
+
+  // ---------- form ----------
+  const F = {
+    monto: $('#f-monto'), ciudad: $('#f-ciudad'), fecha: $('#f-fecha'), benef: $('#f-benef'),
+    recibide: $('#f-recibide'), cat: $('#f-cat'), concepto: $('#f-concepto'),
+  };
+  function syncLetras() {
+    const l = montoLetras(F.monto.value), el = $('#f-letras');
+    el.textContent = l || 'Se escribe solo al ingresar el monto';
+    el.classList.toggle('empty', !l);
+  }
+  F.tec = $('#f-tec'); F.just = $('#f-just'); F.rubro = $('#f-rubro');
+  const PEAJES = 'PEAJES Y ALIMENTACION';
+  const syncRubro = () => { $('#ln-rubro').hidden = F.cat.value !== PEAJES; };
+  F.cat.addEventListener('change', () => { S.autoCat = false; syncRubro(); renderActs(); });
+  F.rubro.addEventListener('change', () => renderActs());
+  let selActs = new Set();
+  F.monto.addEventListener('input', () => { S.autoMonto = false; syncLetras(); updateChecks(); });
+  F.concepto.addEventListener('input', () => { S.autoConcepto = false; });
+  F.fecha.addEventListener('change', () => renderActs());
+  F.tec.addEventListener('change', () => { S.tec = F.tec.value || null; store.set('vc-tec', S.tec || ''); renderActs(); });
+  F.just.addEventListener('input', () => updateChecks());
+
+  // actividades ya cubiertas por otro vale vigente de este técnico
+  const usoDe = (cat, rubro) => cat === PEAJES ? 'P:' + rubro : 'M';
+  function usadas() {
+    const set = new Set(), mio = usoDe(F.cat.value, F.rubro.value);
+    for (const [id, v] of (S.items.get(S.uid) || [])) {
+      if ((S.editing && S.editing.id === id) || estadoDe(S.uid, id) === 'rechazado') continue;
+      if (usoDe(v.categoria, v.rubro) !== mio) continue;
+      for (const a of (v.actividades || [])) set.add(a);
+    }
+    return set;
+  }
+  function progDelDia() {
+    return [...S.prog.entries()].filter(([, a]) => a.tecnico === S.tec && a.fecha === F.fecha.value && a.actividad !== 'LIBRE')
+      .sort((x, y) => (x[1].laboratorio || '').localeCompare(y[1].laboratorio || ''));
+  }
+  function renderActs() {
+    if (!S.ready) return;
+    const box = $('#f-acts'), used = usadas(), list = progDelDia();
+    selActs = new Set([...selActs].filter(id => list.some(([i]) => i === id) && !used.has(id)));
+    if (!S.tec) { box.replaceChildren(h('span', { class: 'err', text: 'Elige primero tu nombre en la lista de técnicos.' })); onSel(); return; }
+    box.replaceChildren(...(list.length ? list.map(([id, a]) => {
+      const u = used.has(id), cb = h('input', { type: 'checkbox', id: 'act-' + id, disabled: u });
+      cb.checked = selActs.has(id);
+      cb.addEventListener('change', () => { if (cb.checked) selActs.add(id); else selActs.delete(id); onSel(); });
+      return h('label', { class: 'act' + (u ? ' used' : '') }, cb, a.laboratorio, h('small', { text: (labNombre(a.laboratorio) ? labNombre(a.laboratorio) + ' · ' : '') + (ACT_TXT[a.actividad] || a.actividad) + (u ? ' · ya tiene vale' : '') }));
+    }) : [h('span', { style: 'color:var(--muted)', text: 'No hay actividades programadas para ' + tecNombre(S.tec) + ' el ' + fdate(F.fecha.value) + '.' })]));
+    onSel();
+  }
+  function curCtx() {
+    const sel = [...selActs].filter(id => S.prog.get(id));
+    const acts = sel.map(id => S.prog.get(id)), labs = acts.map(a => a.laboratorio);
+    const tipo = !acts.length ? '' : acts.every(a => a.actividad === 'REVISION') ? 'REVISION' : acts.every(a => a.actividad === 'COSECHO') ? 'COSECHO' : 'MIXTO';
+    const revs = acts.filter(a => a.actividad === 'REVISION').map(a => a.laboratorio), cos = acts.filter(a => a.actividad === 'COSECHO').map(a => a.laboratorio);
+    return { ids: sel, labs, tipo, revs, cos, t: F.cat.value === PEAJES ? { v: null, sin: [] } : tope(S.tec, labs, tipo) };
+  }
+  // Estructura de la base "Formato GASTOS TECNICOS CONTROL DE CALIDAD"
+  function conceptoAuto(c) {
+    const cat = F.cat.value, labs = c.labs.join(', ');
+    if (cat === PEAJES) {
+      const eng = c.labs.every(l => zonaDe(l) === 7);
+      return `PAGO DE ${F.rubro.value} ${c.tipo === 'COSECHO' ? 'COSECHA' : 'REVISION'} LARVAS ${eng ? 'PLAYAS-ENGABAO ' : ''}LABORATORIOS ${labs}`;
+    }
+    if (cat === 'COSECHA LABORATORIO') return 'MOVILIZACION COSECHA LABORATORIO' + (c.labs.length > 1 ? 'S ' : ' ') + labs;
+    const revs = c.revs.length ? c.revs : c.labs, extra = c.revs.length && c.cos.length ? ', COSECHA ' + c.cos.join(', ') : '';
+    return 'MOVILIZACION REVISION LABORATORIOS ' + revs.join(', ') + extra;
+  }
+  function onSel() {
+    const c = curCtx();
+    if (S.autoCat && c.ids.length) { F.cat.value = c.tipo === 'COSECHO' ? 'COSECHA LABORATORIO' : 'REVISION LABORATORIOS'; syncRubro(); }
+    if (S.autoConcepto) F.concepto.value = c.ids.length ? conceptoAuto(curCtx()) : '';
+    if (S.autoMonto) { F.monto.value = c.t.v != null ? c.t.v : ''; syncLetras(); }
+    updateChecks();
+  }
+  function estadoChecks() {
+    const c = curCtx(), monto = Number(F.monto.value) || 0;
+    if (!S.tec) return { cls: 'warn', msg: 'Elige tu nombre para validar contra la programación.', needJust: false, c };
+    if (!c.ids.length) return { cls: 'warn', msg: progDelDia().length ? 'Marca arriba las actividades que realizaste. Si fue otra distinta, regístralo con justificación y el aprobador lo revisará aparte.' : 'Sin actividad programada para esta fecha. Puedes registrarlo, pero necesita justificación y el aprobador lo revisará aparte.', needJust: true, c };
+    const parts = ['Programada: ' + c.labs.join(', ') + ' (' + (c.tipo === 'MIXTO' ? 'Mixta' : ACT_TXT[c.tipo]) + ')'];
+    let cls = 'ok', needJust = false;
+    if (c.t.v != null) {
+      parts.push('Tarifa máxima ida y vuelta US$ ' + c.t.v.toFixed(2));
+      if (monto > c.t.v + 0.001) { cls = 'bad'; needJust = true; parts.push('El monto supera la tarifa.'); }
+    } else if (F.cat.value === PEAJES) parts.push('Peajes y alimentación: sin tarifa fija, el aprobador revisa el monto.');
+    else if (!TARIFAS_ACTIVAS) parts.push('Sin tarifa sugerida: ingresa el monto y el aprobador lo revisa.');
+    else if (c.tipo === 'REVISION' && !TARIFA[S.tec]) parts.push('Sin tarifa definida para este técnico: el aprobador revisa el monto.');
+    else if (c.tipo !== 'REVISION') parts.push('Cosecha: no tiene tarifa fija, el aprobador revisa el monto.');
+    if (c.t.sin.length) { if (cls === 'ok') cls = 'warn'; parts.push('Sin zona/tarifa para: ' + c.t.sin.join(', ') + '.'); }
+    return { cls, msg: parts.join(' · '), needJust, c };
+  }
+  function updateChecks() {
+    const e = estadoChecks(), el = $('#f-check');
+    el.className = 'check ' + e.cls; el.textContent = e.msg;
+    $('#ln-just').hidden = !e.needJust;
+    return e;
+  }
+  function nextNumero() { let m = 0; for (const v of (S.items.get(S.uid)?.values() || [])) m = Math.max(m, v.numero || 0); return m + 1; }
+  function resetForm() {
+    S.editing = null;
+    F.monto.value = ''; F.concepto.value = ''; F.fecha.value = today();
+    F.ciudad.value = store.get('vc-ciudad') || '';
+    F.benef.value = store.get('vc-benef') || S.me?.name || '';
+    F.recibide.value = 'NATURISA S.A.';
+    F.cat.value = 'REVISION LABORATORIOS'; F.rubro.value = 'PEAJES'; S.autoCat = true; syncRubro();
+    selActs = new Set(); S.autoMonto = true; S.autoConcepto = true; F.just.value = '';
+    pad.clear(); syncLetras(); $('#f-err').textContent = '';
+    $('#f-cancel').hidden = true;
+    renderActs();
+    refreshFormHead();
+  }
+  function refreshFormHead() {
+    $('#f-num').textContent = S.editing ? pad4(S.editing.data.numero) + ' · editando' : (S.ready ? pad4(nextNumero()) : 'N° —');
+    const b = $('#f-submit');
+    if (!S.ready) { b.disabled = true; b.textContent = S.uid === undefined ? 'Conectando…' : 'Sin acceso'; return; }
+    b.disabled = false; b.textContent = S.editing ? 'Guardar cambios y reenviar' : 'Registrar vale';
+  }
+  function readForm() {
+    const monto = Math.round(Number(F.monto.value) * 100) / 100, e = estadoChecks();
+    return {
+      monto, montoLetras: montoLetras(monto), ciudad: F.ciudad.value.trim(), fecha: F.fecha.value,
+      beneficiario: F.benef.value.trim(), recibiDe: F.recibide.value.trim(), categoria: F.cat.value,
+      concepto: F.concepto.value.trim(), firma: pad.exportPng(),
+      tecnico: S.tec, actividades: e.c.ids, labs: e.c.labs, tipoActividad: F.cat.value === PEAJES ? 'PEAJES' : e.c.tipo, rubro: F.cat.value === PEAJES ? F.rubro.value : '',
+      programada: e.c.ids.length > 0, tarifaTope: e.c.t.v, excede: e.c.t.v != null && monto > e.c.t.v + 0.001,
+      requiereJust: e.needJust, justificacion: e.needJust ? F.just.value.trim() : '',
+    };
+  }
+  function validar(v) {
+    if (!v.tecnico) return ['f-tec', 'Elige tu nombre en la lista de técnicos.'];
+    if (!(v.monto > 0)) return ['f-monto', 'Ingresa el monto en dólares.'];
+    if (v.monto > 5000) return ['f-monto', 'El monto supera US$ 5,000. Revisa la cifra.'];
+    if (!v.ciudad) return ['f-ciudad', 'Escribe la ciudad.'];
+    if (!v.fecha) return ['f-fecha', 'Escribe la fecha completa como dd/mm/aaaa.'];
+    if (v.fecha > today()) return ['f-fecha', 'La fecha no puede ser futura.'];
+    if (!v.beneficiario) return ['f-benef', 'Escribe tu nombre en "Yo / Nosotros".'];
+    if (!v.recibiDe) return ['f-recibide', 'Indica de quién recibes el dinero.'];
+    if (v.concepto.length < 5) return ['f-concepto', 'Describe el concepto del gasto.'];
+    if (v.requiereJust && v.justificacion.length < 10) return ['f-just', 'Escribe la justificación (mínimo una frase).'];
+    if (!v.firma) return ['f-firma', 'Firma en el recuadro "Recibí conforme".'];
+    return null;
+  }
+  $('#form').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!S.ready) return;
+    const v = readForm(), bad = validar(v);
+    if (bad) { $('#f-err').textContent = bad[1]; document.getElementById(bad[0]).focus(); return; }
+    $('#f-err').textContent = '';
+    const btn = $('#f-submit'); btn.disabled = true; btn.textContent = 'Guardando…';
+    try {
+      const col = S.db.collection(`vales/${S.uid}/items`), now = new Date().toISOString();
+      let numero;
+      if (S.editing) {
+        const prev = S.editing.data; numero = prev.numero;
+        await col.doc(S.editing.id).set({ ...v, numero, uid: S.uid, creado: prev.creado, actualizado: now, rev: (prev.rev || 1) + 1 });
+      } else {
+        numero = nextNumero();
+        await col.doc().set({ ...v, numero, uid: S.uid, creado: now, actualizado: now, rev: 1 });
+      }
+      await S.db.doc(`vales/${S.uid}`).set({ uid: S.uid, actualizado: now });
+      store.set('vc-ciudad', v.ciudad); store.set('vc-benef', v.beneficiario); store.set('vc-cat', v.categoria);
+      toast(`${pad4(numero)} enviado al supervisor · ${money(v.monto)}`);
+      resetForm(); setTab('mis');
+    } catch (err) {
+      $('#f-err').textContent = writeErr(err);
+    } finally { refreshFormHead(); }
+  });
+  $('#f-cancel').addEventListener('click', () => resetForm());
+
+  function editar(id) {
+    const v = S.items.get(S.uid)?.get(id); if (!v) return;
+    S.editing = { id, data: v };
+    F.monto.value = v.monto; F.ciudad.value = v.ciudad || ''; F.fecha.value = v.fecha || today();
+    F.benef.value = v.beneficiario || ''; F.recibide.value = v.recibiDe || ''; F.cat.value = v.categoria; if (!F.cat.value) F.cat.value = 'REVISION LABORATORIOS'; F.rubro.value = v.rubro || 'PEAJES'; S.autoCat = false; syncRubro(); F.concepto.value = v.concepto || '';
+    S.tec = v.tecnico || S.tec; F.tec.value = S.tec || ''; selActs = new Set(v.actividades || []);
+    S.autoMonto = false; S.autoConcepto = false; F.just.value = v.justificacion || '';
+    renderActs();
+    syncLetras(); $('#f-cancel').hidden = false; $('#f-err').textContent = '';
+    closeDetail(); setTab('nuevo');
+    requestAnimationFrame(() => { pad.resize(); pad.load(v.firma); });
+    refreshFormHead();
+  }
+
+  // ---------- vale (read-only) ----------
+  function valeDoc(uid, id) {
+    const v = S.items.get(uid).get(id), a = S.aprob.get(uid)?.get(id), est = estadoDe(uid, id);
+    const ln = (lb, val, suf) => h('div', { class: 'ln' }, h('span', { class: 'lb', text: lb }), h('span', { class: 'ro', text: val }), suf ? h('span', { class: 'suf', text: suf }) : null);
+    const stamp = h('div', { class: 'stamp' });
+    if (est === 'pendiente') {
+      stamp.append(h('span', { class: 'st c-pendiente', text: a && a.rev !== v.rev ? 'Corregido' : 'Por revisar' }), h('small', { text: 'Pendiente de aprobación' }));
+    } else {
+      stamp.append(h('span', { class: 'st c-' + est, text: ESTADOS[est] }));
+      stamp.append(h('small', { text: `${S.names[a.por] || 'Aprobador'} · ${fdate((a.fecha || '').slice(0, 10))}` }));
+      if (a.nota) stamp.append(h('span', { class: 'note', text: '“' + a.nota + '”' }));
+    }
+    const altered = a && a.rev === v.rev && Math.abs((a.monto ?? v.monto) - v.monto) > 0.001;
+    return h('div', { class: 'vale' },
+      h('div', { class: 'v-head' },
+        h('div', {}, h('h2', { class: 'v-title', text: 'Vale de Caja' }), h('div', { class: 'v-num', text: pad4(v.numero) + (S.canViewAll && uid !== S.uid ? ' · ' + nombreDe(uid, v) : '') })),
+        h('div', { class: 'usd' }, h('label', { text: 'US$' }), h('output', { text: (Number(v.monto) || 0).toFixed(2) }))),
+      h('div', { class: 'v-meta' },
+        h('div', { class: 'box' }, h('div', { class: 'in', text: v.ciudad || '—' }), h('span', { text: 'Ciudad' })),
+        h('div', { class: 'box' }, h('div', { class: 'in', text: fdate(v.fecha) }), h('span', { text: 'Día · Mes · Año' }))),
+      h('div', { class: 'panel' },
+        ln('Yo / Nosotros:', v.beneficiario || '—'),
+        ln('Recibí(mos) de:', v.recibiDe || '—'),
+        h('div', { class: 'ln' }, h('span', { class: 'lb', text: 'El valor de:' }), h('span', { class: 'val letras', text: v.montoLetras || montoLetras(v.monto) }), h('span', { class: 'suf', text: 'dólares.' })),
+        ln('Tipo de actividad:', v.categoria || '—'),
+        ln('Por concepto de:', v.concepto || '—')),
+      valBox(v),
+      altered ? h('p', { class: 'flag', text: `Atención: el monto cambió después de la aprobación (aprobado: ${money(a.monto)}).` }) : null,
+      h('div', { class: 'v-foot' },
+        h('div', { class: 'sig sig-vto' }, stamp, h('div', { class: 'cap', text: 'Vto. Bno.' })),
+        h('div', { class: 'sig' }, v.firma ? h('img', { class: 'firma-img', src: v.firma, alt: 'Firma de ' + (v.beneficiario || 'quien recibe') }) : h('div', { class: 'stamp' }, h('small', { text: 'Sin firma' })), h('div', { class: 'cap', text: 'Recibí Conforme' }))));
+  }
+
+  function openDetail(uid, id) { S.detail = { uid, id, mode: null }; renderDetail(); $('#ov').hidden = false; }
+  function closeDetail() { S.detail = null; $('#ov').hidden = true; $('#ov-card').replaceChildren(); }
+  $('#ov').addEventListener('click', e => { if (e.target.id === 'ov') closeDetail(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.detail) closeDetail(); });
+
+  function renderDetail() {
+    const d = S.detail; if (!d) return;
+    const v = S.items.get(d.uid)?.get(d.id);
+    if (!v) { closeDetail(); return; }
+    const est = estadoDe(d.uid, d.id), mine = d.uid === S.uid;
+    const bar = h('div', { class: 'ov-bar' });
+    const left = h('div', { class: 'grp' }), right = h('div', { class: 'grp' });
+    const status = h('span', { class: 'err' });
+    right.append(h('button', { class: 'btn ghost', type: 'button', text: 'Cerrar', onclick: closeDetail }));
+
+    const run = async (fn, okMsg) => {
+      for (const b of bar.querySelectorAll('button')) b.disabled = true;
+      try { await fn(); toast(okMsg); if (S.detail) { S.detail.mode = null; renderDetail(); } }
+      catch (err) { status.textContent = writeErr(err); for (const b of bar.querySelectorAll('button')) b.disabled = false; }
+    };
+
+    if (d.mode === 'rechazar') {
+      const ta = h('textarea', { id: 'ov-nota', placeholder: 'Motivo del rechazo (lo verá el técnico)' });
+      bar.replaceChildren(ta, h('div', { class: 'grp' },
+        h('button', { class: 'btn bad', type: 'button', text: 'Confirmar rechazo', onclick: () => { if (!ta.value.trim()) { status.textContent = 'Escribe el motivo.'; ta.focus(); return; } run(() => setEstado(d.uid, d.id, 'rechazado', ta.value.trim()), `${pad4(v.numero)} rechazado`); } }),
+        h('button', { class: 'btn ghost', type: 'button', text: 'Volver', onclick: () => { d.mode = null; renderDetail(); } }), status));
+    } else if (d.mode === 'eliminar') {
+      bar.replaceChildren(h('span', { text: `¿Eliminar ${pad4(v.numero)} por ${money(v.monto)}? No se puede deshacer.` }), h('div', { class: 'grp' },
+        h('button', { class: 'btn bad', type: 'button', text: 'Eliminar vale', onclick: () => run(async () => { await S.db.doc(`vales/${d.uid}/items/${d.id}`).delete(); closeDetail(); }, `${pad4(v.numero)} eliminado`) }),
+        h('button', { class: 'btn ghost', type: 'button', text: 'Volver', onclick: () => { d.mode = null; renderDetail(); } }), status));
+    } else {
+      if (S.canApprove) {
+        if (est === 'pendiente' || est === 'rechazado') left.append(h('button', { class: 'btn ok', type: 'button', text: 'Aprobar (Vto. Bno.)', onclick: () => run(() => setEstado(d.uid, d.id, 'aprobado'), `${pad4(v.numero)} aprobado`) }));
+        if (est === 'pendiente' || est === 'aprobado') left.append(h('button', { class: 'btn ghost', type: 'button', text: 'Rechazar', onclick: () => { d.mode = 'rechazar'; renderDetail(); } }));
+      }
+      if (mine && (est === 'pendiente' || est === 'rechazado')) {
+        left.append(h('button', { class: 'btn', type: 'button', text: est === 'rechazado' ? 'Corregir y reenviar' : 'Editar', onclick: () => editar(d.id) }));
+        left.append(h('button', { class: 'btn ghost', type: 'button', text: 'Eliminar', onclick: () => { d.mode = 'eliminar'; renderDetail(); } }));
+      }
+      left.append(status);
+      bar.append(left, right);
+    }
+    const card = $('#ov-card');
+    card.replaceChildren(valeDoc(d.uid, d.id), bar);
+  }
+
+  async function setEstado(uid, id, estado, nota) {
+    const v = S.items.get(uid).get(id), prev = S.aprob.get(uid)?.get(id) || {}, now = new Date().toISOString();
+    const body = { estado, rev: v.rev, monto: v.monto, por: S.uid, fecha: now, nota: nota || '' };
+    await S.db.doc(`aprobaciones/${uid}/items/${id}`).set(body);
+  }
+
+  // ---------- lists ----------
+  function filaVale(uid, id, v, extra) {
+    const est = estadoDe(uid, id);
+    return h('button', { class: 'row', type: 'button', onclick: () => openDetail(uid, id) },
+      h('span', { class: 'n', text: String(v.numero || 0).padStart(4, '0') }),
+      h('span', { class: 'c' }, h('b', { text: v.concepto || '—' }), h('small', { text: `${fdate(v.fecha)} · ${v.ciudad || ''} · ${v.categoria || ''}${extra || ''}` })),
+      h('span', { class: 'm', text: money(v.monto) }),
+      h('span', { class: 'pill p-' + est, text: ESTADOS[est] }));
+  }
+
+  function renderMis() {
+    const box = $('#mis-list');
+    if (!S.ready) { box.replaceChildren(h('div', { class: 'empty' }, h('b', { text: 'Tus vales aparecerán aquí' }), 'Entra con tu cuenta para ver los vales que registraste.')); $('#mis-sum').textContent = ''; return; }
+    const m = S.items.get(S.uid) || new Map();
+    const list = [...m.entries()].sort((a, b) => (b[1].fecha || '').localeCompare(a[1].fecha || '') || (b[1].numero || 0) - (a[1].numero || 0));
+    $('#ct-mis').textContent = list.length ? String(list.length) : '';
+    if (!list.length) { box.replaceChildren(h('div', { class: 'empty' }, h('b', { text: 'Aún no registras vales' }), 'Llena el formulario en "Nuevo vale", fírmalo y envíalo. Aquí verás si el supervisor lo aprobó.')); $('#mis-sum').textContent = ''; return; }
+    let pend = 0, porCobrar = 0;
+    const groups = new Map();
+    for (const [id, v] of list) {
+      const k = (v.fecha || '').slice(0, 7) || 'sin-fecha';
+      if (!groups.has(k)) groups.set(k, []);
+      groups.get(k).push([id, v]);
+      const e = estadoDe(S.uid, id);
+      if (e === 'pendiente') pend++;
+      if (e === 'aprobado') porCobrar += Number(v.monto) || 0;
+    }
+    $('#mis-sum').textContent = `${pend} pendiente${pend === 1 ? '' : 's'} · ${money(porCobrar)} aprobado`;
+    box.replaceChildren(...[...groups].map(([k, rows]) => h('div', { class: 'month' },
+      h('div', { class: 'month-h' }, h('span', { text: k === 'sin-fecha' ? 'Sin fecha' : monthLabel(k) }), h('span', { text: money(rows.reduce((s, [, v]) => s + (Number(v.monto) || 0), 0)) })),
+      rows.map(([id, v]) => filaVale(S.uid, id, v)))));
+  }
+
+  function bandejaRows() {
+    const mes = $('#b-mes').value, tec = $('#b-tec').value, est = $('#b-est').value, out = [];
+    for (const [uid, m] of S.items) {
+      if (tec && uid !== tec) continue;
+      for (const [id, v] of m) {
+        if (mes && (v.fecha || '').slice(0, 7) !== mes) continue;
+        const e = estadoDe(uid, id);
+        if (est && e !== est) continue;
+        out.push({ uid, id, v, e, a: S.aprob.get(uid)?.get(id) });
+      }
+    }
+    return out.sort((x, y) => (x.e === 'pendiente') - (y.e === 'pendiente') ? (y.e === 'pendiente') - (x.e === 'pendiente') : (y.v.fecha || '').localeCompare(x.v.fecha || ''));
+  }
+
+  function renderBandeja() {
+    if (!S.canViewAll) return;
+    const sel = $('#b-tec'), cur = sel.value;
+    const techs = [...S.items.keys()].map(uid => [uid, nombreDe(uid, [...(S.items.get(uid)?.values() || [])][0])]).sort((a, b) => a[1].localeCompare(b[1]));
+    sel.replaceChildren(h('option', { value: '', text: 'Todos' }), ...techs.map(([uid, n]) => h('option', { value: uid, text: n })));
+    sel.value = techs.some(([u]) => u === cur) ? cur : '';
+
+    const rows = bandejaRows();
+    let allPend = 0;
+    for (const [uid, m] of S.items) for (const id of m.keys()) if (estadoDe(uid, id) === 'pendiente') allPend++;
+    $('#ct-band').textContent = allPend ? String(allPend) : '';
+    const sum = st => rows.filter(r => !st || r.e === st).reduce((s, r) => s + (Number(r.v.monto) || 0), 0);
+    const cnt = st => rows.filter(r => r.e === st).length;
+    const tile = (cls, lb, val, sub) => h('div', { class: 'tile ' + cls }, h('span', { text: lb }), h('b', { text: val }), h('small', { text: sub }));
+    $('#b-tiles').replaceChildren(
+      tile('t-pend', 'Por revisar', money(sum('pendiente')), `${cnt('pendiente')} vales`),
+      tile('t-apr', 'Aprobado', money(sum('aprobado')), `${cnt('aprobado')} vales`),
+      tile('', 'Total del filtro', money(rows.filter(r => r.e !== 'rechazado').reduce((s, r) => s + (Number(r.v.monto) || 0), 0)), `${rows.length} vales · sin rechazados`));
+    if (!rows.length) {
+      $('#b-table').replaceChildren(h('div', { class: 'empty' }, h('b', { text: S.items.size ? 'No hay vales con este filtro' : 'Todavía no llegan vales' }), S.items.size ? 'Cambia el mes, técnico o estado.' : 'Cuando un técnico registre su vale aparecerá aquí para darle el Vto. Bno.'));
+      return;
+    }
+    const tb = h('tbody', {}, rows.map(r => h('tr', { onclick: () => openDetail(r.uid, r.id) },
+      h('td', { text: nombreDe(r.uid, r.v) }),
+      h('td', { class: 'num', text: String(r.v.numero || 0).padStart(4, '0') }),
+      h('td', { text: fdate(r.v.fecha) }),
+      h('td', { text: r.v.ciudad || '' }),
+      h('td', { text: r.v.categoria || '' }),
+      h('td', { class: 'wrap', text: r.v.concepto || '' }),
+      h('td', { class: 'num', text: money(r.v.monto) }),
+      h('td', {}, valChips(r.v)),
+      h('td', {}, h('span', { class: 'pill p-' + r.e, text: ESTADOS[r.e] })))));
+    $('#b-table').replaceChildren(h('div', { class: 'tbl-wrap' }, h('table', {},
+      h('thead', {}, h('tr', {}, ['Técnico', 'N°', 'Fecha', 'Ciudad', 'Tipo', 'Concepto', 'Monto', 'Validación', 'Estado'].map((t, i) => h('th', { class: i === 1 || i === 6 ? 'num' : null, text: t })))), tb)));
+  }
+  ['#b-mes', '#b-tec', '#b-est'].forEach(s => $(s).addEventListener('change', () => { store.set('vc-' + s.slice(1), $(s).value); renderBandeja(); }));
+
+  // Exportar con las columnas del "Formato GASTOS TECNICOS CONTROL DE CALIDAD" (solo vales aprobados)
+  $('#b-export2').addEventListener('click', async () => {
+    const btn = $('#b-export2'); btn.disabled = true; btn.textContent = 'Preparando…';
+    try {
+      const X = await loadXLSX();
+      const tipoAct = v => ['REVISION LABORATORIOS', 'COSECHA LABORATORIO', 'PEAJES Y ALIMENTACION'].includes(v.categoria) ? v.categoria : (v.tipoActividad === 'COSECHO' ? 'COSECHA LABORATORIO' : 'REVISION LABORATORIOS');
+      const rows = bandejaRows().filter(r => r.e === 'aprobado').sort((a, b) => (a.v.fecha || '').localeCompare(b.v.fecha || '') || (a.v.numero || 0) - (b.v.numero || 0));
+      if (!rows.length) { toast('No hay vales aprobados en este filtro.'); return; }
+      // Misma estructura que la base "Formato GASTOS TECNICOS CONTROL DE CALIDAD": títulos en filas 1-2, encabezados en fila 3, datos desde la fila 4.
+      // Fijos: PROVEEDOR, TIPO/DOC., # DOCUMENTO, CAMPAMENTO, SUST. TRIBUTARIO, CENTRO DE COSTOS. Los llena el administrador a mano: DESTINO, RUC, SUBTOTAL 15%, IVA, CUSTODIO.
+      const HEAD = ['FECHA', 'NOMBRES', 'DESTINO', 'PROVEEDOR', 'TIPO / DOC.', '# DOCUMENTO', 'RUC', 'DETALLE', 'SUBTOTAL 0%', 'SUBTOTAL 15%', 'IVA', 'TOTAL ', 'CAMPAMENTO', 'CUSTODIO', 'SUST. TRIBUTARIO', 'CENTRO DE COSTOS', 'TIPO ACTIVIDAD'];
+      const aoa = [['NATURISA S.A.'], ['REPORTE TECNICOS CONTROL DE CALIDAD '], HEAD];
+      rows.forEach(r => {
+        const [y, m, d] = (r.v.fecha || '').split('-').map(Number), tk = r.v.tecnico || '';
+        aoa.push([new Date(Date.UTC(y, m - 1, d)), FULL[tk] || tecNombre(tk).toUpperCase(), '', 'NEGOCIO POPULAR', 'KV', 'VALE CAJA', '', r.v.concepto || '', Number(r.v.monto) || 0, '', '', null,
+          'TEC. REVISION LARVAS', '', 'N2', '1715209009 - Laboratorio de Calidad', tipoAct(r.v)]);
+      });
+      const last = aoa.length, tot = rows.reduce((s, r) => s + (Number(r.v.monto) || 0), 0);
+      aoa.push([]);
+      aoa.push(['FECHA:', new Date(), 'REALIZADO POR:', '', '', '', 'APROBADO:', '', '', 'TOTAL REPORTE:', '', null]);
+      const ws = X.utils.aoa_to_sheet(aoa, { cellDates: true }), wb = X.utils.book_new();
+      const money2 = '_ "$"* #,##0.00_ ;_ "$"* \\-#,##0.00_ ;_ "$"* "-"??_ ;_ @_ ';
+      for (let i = 4; i <= last; i++) {
+        const a = ws['A' + i]; if (a) a.z = 'dd/mm/yyyy';
+        ws['L' + i] = { t: 'n', f: `SUM(I${i}:K${i})`, v: Number(ws['I' + i].v) || 0 };
+        for (const c of 'IJKL') { ws[c + i] = ws[c + i] || { t: 's', v: '' }; ws[c + i].z = money2; }
+      }
+      ws['B' + (last + 2)].z = 'dd/mm/yyyy';
+      ws['L' + (last + 2)] = { t: 'n', f: `SUM(L4:L${last})`, v: tot, z: money2 };
+      ws['!cols'] = [12, 36, 12, 18, 10, 12, 14, 56, 14, 14, 10, 14, 22, 12, 14, 34, 24].map(w => ({ wch: w }));
+      X.utils.book_append_sheet(wb, ws, 'Hoja1');
+      // RESUMEN (misma idea que la hoja RESUMEN de la base): totales por técnico, por técnico y tipo, y por tipo. Son fórmulas sobre Hoja1.
+      const CATS = ['COSECHA LABORATORIO', 'PEAJES Y ALIMENTACION', 'REVISION LABORATORIOS'];
+      const tecs = [...new Set(rows.map(r => FULL[r.v.tecnico || ''] || tecNombre(r.v.tecnico).toUpperCase()))].sort();
+      const nom = r => FULL[r.v.tecnico || ''] || tecNombre(r.v.tecnico).toUpperCase();
+      const sumBy = (t, c) => rows.filter(r => (!t || nom(r) === t) && (!c || tipoAct(r.v) === c)).reduce((s, r) => s + (Number(r.v.monto) || 0), 0);
+      const RB = `Hoja1!$B$4:$B$${last}`, RL = `Hoja1!$L$4:$L$${last}`, RQ = `Hoja1!$Q$4:$Q$${last}`;
+      const rs = X.utils.aoa_to_sheet([['NATURISA S.A. - RESUMEN GASTOS TECNICOS CONTROL DE CALIDAD']]);
+      const put = (a, v, f, z) => { rs[a] = { t: typeof v === 'number' ? 'n' : 's', v }; if (f) rs[a].f = f; if (z) rs[a].z = z; };
+      const col = i => String.fromCharCode(65 + i);
+      let r0 = 3;
+      put('A' + r0, 'TOTAL POR TECNICO'); r0++;
+      put('A' + r0, 'TECNICO'); put('B' + r0, 'TOTAL'); r0++;
+      const a1 = r0;
+      tecs.forEach(t => { put('A' + r0, t); put('B' + r0, sumBy(t), `SUMIF(${RB},A${r0},${RL})`, money2); r0++; });
+      put('A' + r0, 'Total general'); put('B' + r0, tot, `SUM(B${a1}:B${r0 - 1})`, money2); r0 += 2;
+      put('A' + r0, 'TOTAL POR TECNICO Y TIPO DE ACTIVIDAD'); r0++;
+      put('A' + r0, 'TECNICO'); CATS.forEach((c, i) => put(col(i + 1) + r0, c)); put('E' + r0, 'Total general'); r0++;
+      const a2 = r0;
+      tecs.forEach(t => {
+        put('A' + r0, t);
+        CATS.forEach((c, i) => put(col(i + 1) + r0, sumBy(t, c), `SUMIFS(${RL},${RB},$A${r0},${RQ},${col(i + 1)}$${a2 - 1})`, money2));
+        put('E' + r0, sumBy(t), `SUM(B${r0}:D${r0})`, money2); r0++;
+      });
+      put('A' + r0, 'Total general'); ['B', 'C', 'D', 'E'].forEach((c, i) => put(c + r0, i < 3 ? sumBy(null, CATS[i]) : tot, `SUM(${c}${a2}:${c}${r0 - 1})`, money2)); r0 += 2;
+      put('A' + r0, 'TOTAL POR TIPO DE ACTIVIDAD'); r0++;
+      put('A' + r0, 'TIPO DE ACTIVIDAD'); put('B' + r0, 'TOTAL'); r0++;
+      const a3 = r0;
+      CATS.forEach(c => { put('A' + r0, c); put('B' + r0, sumBy(null, c), `SUMIF(${RQ},A${r0},${RL})`, money2); r0++; });
+      put('A' + r0, 'Total general'); put('B' + r0, tot, `SUM(B${a3}:B${r0 - 1})`, money2);
+      rs['!ref'] = 'A1:E' + r0; rs['!cols'] = [38, 22, 24, 24, 16].map(w => ({ wch: w }));
+      X.utils.book_append_sheet(wb, rs, 'RESUMEN');
+      saveBlob('Vales aprobados formato gastos ' + ($('#b-mes').value || 'todos') + '.xlsx', X.write(wb, { bookType: 'xlsx', type: 'array', cellDates: true }));
+      toast('Excel generado: ' + rows.length + ' vales');
+    } catch { toast('No se pudo generar el Excel (se necesita internet para cargar la librería).'); }
+    finally { btn.disabled = false; btn.textContent = 'Exportar formato de gastos'; }
+  });
+
+  // ---------- programación diaria (supervisor) ----------
+  const progId = (f, t, l, a) => [f, t, l, a].join('_').replace(/[^A-Za-z0-9_\-]+/g, '-');
+  function valesPorAct() {
+    const m = new Map();
+    for (const [uid, items] of S.items) for (const [id, v] of items) {
+      if (estadoDe(uid, id) === 'rechazado') continue;
+      for (const a of (v.actividades || [])) { if (!m.has(a)) m.set(a, []); m.get(a).push({ uid, id, v }); }
+    }
+    return m;
+  }
+  function renderProg() {
+    if (!S.canViewAll) return;
+    const mes = $('#p-mes').value, tec = $('#p-ftec').value, fv = $('#p-fvale').value, vm = valesPorAct();
+    let rows = [...S.prog.entries()].map(([id, a]) => ({ id, a, vs: vm.get(id) || [] }))
+      .filter(r => (!mes || (r.a.fecha || '').slice(0, 7) === mes) && (!tec || r.a.tecnico === tec))
+      .filter(r => !fv || (fv === 'sin' ? !r.vs.length && r.a.actividad !== 'LIBRE' : r.vs.length));
+    rows.sort((x, y) => (y.a.fecha || '').localeCompare(x.a.fecha || '') || (x.a.tecnico || '').localeCompare(y.a.tecnico || '') || (x.a.laboratorio || '').localeCompare(y.a.laboratorio || ''));
+    const box = $('#p-table');
+    if (!rows.length) { box.replaceChildren(h('div', { class: 'empty' }, h('b', { text: S.prog.size ? 'No hay actividades con este filtro' : 'Aún no hay programación cargada' }), S.prog.size ? 'Cambia el mes, técnico o estado del vale.' : 'Agrega actividades arriba o importa el Excel ACTIVIDADES TECNICOS CALIDAD (columnas FECHA, NOMBRE - TECNICO, LABORATORIO, ACTIVIDAD).')); return; }
+    const body = h('tbody', {}, rows.map(r => {
+      const del = h('button', { class: 'btn x', type: 'button', text: 'Quitar' });
+      let armed = false, tm;
+      del.addEventListener('click', async () => {
+        if (!armed) { armed = true; del.textContent = '¿Seguro?'; tm = setTimeout(() => { armed = false; del.textContent = 'Quitar'; }, 3000); return; }
+        clearTimeout(tm); del.disabled = true;
+        try { await S.db.doc('programacion/' + r.id).delete(); toast('Actividad quitada de la programación'); } catch (e) { toast(writeErr(e)); del.disabled = false; }
+      });
+      const z = zonaDe(r.a.laboratorio);
+      const vale = r.a.actividad === 'LIBRE' ? '—' : r.vs.length
+        ? h('span', {}, r.vs.map(x => h('span', { class: 'vchip ok', text: pad4(x.v.numero) + ' · ' + ESTADOS[estadoDe(x.uid, x.id)] })))
+        : h('span', { class: 'vchip warn', text: 'Sin vale' });
+      return h('tr', { style: 'cursor:default' },
+        h('td', { text: fdate(r.a.fecha) }), h('td', { text: tecNombre(r.a.tecnico) }), h('td', { text: r.a.laboratorio || '', title: labNombre(r.a.laboratorio) }),
+        h('td', { text: ACT_TXT[r.a.actividad] || r.a.actividad || '' }), h('td', { text: z ? 'S' + z : '—' }), h('td', {}, vale), h('td', {}, S.isAdmin ? del : null));
+    }));
+    box.replaceChildren(h('div', { class: 'tbl-wrap' }, h('table', {},
+      h('thead', {}, h('tr', {}, ['Fecha', 'Técnico', 'Laboratorio', 'Actividad', 'Zona', 'Vale de caja', ''].map(t => h('th', { text: t })))), body)));
+  }
+  ['#p-mes', '#p-ftec', '#p-fvale'].forEach(sel => $(sel).addEventListener('change', () => { store.set('vc-' + sel.slice(1), $(sel).value); renderProg(); }));
+  $('#p-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const fecha = $('#p-fecha').value, tec = $('#p-tec').value, act = $('#p-act').value, lab = $('#p-lab').value.trim().toUpperCase() || (act === 'LIBRE' ? 'LIBRE' : ''), err = $('#p-err');
+    err.textContent = '';
+    if (!fecha || !tec || !lab) { err.textContent = 'Completa fecha, técnico y laboratorio.'; return; }
+    if (act !== 'LIBRE' && !zonaDe(lab)) { err.textContent = (labNombre(lab) ? 'El laboratorio ' + lab + ' aún no tiene zona asignada.' : 'El laboratorio ' + lab + ' no existe en el catálogo del sistema.') + ' Se guardará sin tarifa.'; }
+    try {
+      await S.db.doc('programacion/' + progId(fecha, tec, lab, act)).set({ fecha, tecnico: tec, laboratorio: lab, actividad: act, creadoPor: S.uid, creado: new Date().toISOString() });
+      $('#p-lab').value = ''; toast('Actividad programada'); $('#p-lab').focus();
+    } catch (x) { err.textContent = writeErr(x); }
+  });
+  $('#p-import').addEventListener('click', () => $('#p-file').click());
+  function isoDe(v) {
+    if (v instanceof Date) return new Date(v.getTime() + 12 * 36e5).toISOString().slice(0, 10);
+    if (typeof v === 'number') return new Date(Math.round((v - 25569) * 864e5)).toISOString().slice(0, 10);
+    const t = String(v || '').trim(); let m;
+    if ((m = t.match(/^(\d{4})-(\d{2})-(\d{2})/))) return m[1] + '-' + m[2] + '-' + m[3];
+    if ((m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
+    return null;
+  }
+  $('#p-file').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    const msg = $('#p-err'); msg.textContent = 'Leyendo Excel…';
+    try {
+      const X = await loadXLSX(), wb = X.read(await f.arrayBuffer(), { type: 'array', cellDates: true });
+      const docs = new Map(); let skip = 0;
+      for (const name of wb.SheetNames) {
+        const rows = X.utils.sheet_to_json(wb.Sheets[name], { header: 1, raw: true, defval: null });
+        const hi = rows.findIndex(r => r.some(c => norm(c).includes('fecha')));
+        if (hi < 0) continue;
+        const hd = rows[hi].map(c => norm(c)), col = k => hd.findIndex(c => c.includes(k));
+        const cf = col('fecha'), ct = col('tecnico'), cl = col('laboratorio'), ca = col('actividad');
+        if (cf < 0 || ct < 0 || ca < 0) continue;
+        for (const r of rows.slice(hi + 1)) {
+          if (r.every(c => c == null || c === '')) continue;
+          const fecha = isoDe(r[cf]), tec = matchTec(r[ct]), a = norm(r[ca]);
+          const act = a.startsWith('rev') ? 'REVISION' : a.startsWith('cos') ? 'COSECHO' : a.startsWith('lib') ? 'LIBRE' : null;
+          const lab = String(cl >= 0 && r[cl] ? r[cl] : (act === 'LIBRE' ? 'LIBRE' : '')).trim().toUpperCase();
+          if (!fecha || !tec || !act || !lab) { skip++; continue; }
+          docs.set(progId(fecha, tec, lab, act), { fecha, tecnico: tec, laboratorio: lab, actividad: act });
+        }
+      }
+      if (!docs.size) { msg.textContent = 'No se encontraron filas válidas. Revisa que las columnas sean FECHA, NOMBRE - TECNICO, LABORATORIO y ACTIVIDAD.'; return; }
+      let i = 0;
+      for (const [id, d] of docs) {
+        msg.textContent = 'Guardando ' + (++i) + ' de ' + docs.size + '…';
+        await S.db.doc('programacion/' + id).set({ ...d, creadoPor: S.uid, creado: new Date().toISOString() });
+      }
+      msg.textContent = '';
+      toast('Importadas ' + docs.size + ' actividades' + (skip ? ' · ' + skip + ' filas omitidas (técnico o dato no reconocido)' : ''));
+    } catch (x) { msg.textContent = x && x.code ? writeErr(x) : 'No se pudo leer el Excel.'; }
+  });
+
+  // Excel export (SheetJS loaded only when needed)
+  function loadXLSX() {
+    if (window.XLSX) return Promise.resolve(window.XLSX);
+    return new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = () => res(window.XLSX); s.onerror = () => rej(new Error('load')); document.head.append(s); });
+  }
+  $('#b-export').addEventListener('click', async () => {
+    const btn = $('#b-export'); btn.disabled = true; btn.textContent = 'Preparando…';
+    try {
+      const X = await loadXLSX();
+      const data = bandejaRows().map(r => ({
+        'Técnico': nombreDe(r.uid, r.v), 'N° vale': r.v.numero, 'Fecha': fdate(r.v.fecha), 'Ciudad': r.v.ciudad, 'Yo / Nosotros': r.v.beneficiario,
+        'Recibí de': r.v.recibiDe, 'Tipo de actividad': r.v.categoria, 'Concepto': r.v.concepto, 'Actividades': (r.v.labs || []).join(', '), 'Validación': valTexto(r.v), 'Monto US$': Number(r.v.monto) || 0,
+        'Valor en letras': r.v.montoLetras, 'Estado': ESTADOS[r.e], 'Vto. Bno. por': r.a && r.e !== 'pendiente' ? (S.names[r.a.por] || '') : '',
+        'Fecha Vto. Bno.': r.a && r.e !== 'pendiente' ? fdate((r.a.fecha || '').slice(0, 10)) : '', 'Observación': r.a && r.e !== 'pendiente' ? (r.a.nota || '') : '',
+      }));
+      const ws = X.utils.json_to_sheet(data), wb = X.utils.book_new();
+      ws['!cols'] = [22, 8, 11, 14, 24, 16, 16, 44, 18, 26, 11, 40, 11, 22, 14, 30].map(w => ({ wch: w }));
+      X.utils.book_append_sheet(wb, ws, 'Vales');
+      const buf = X.write(wb, { bookType: 'xlsx', type: 'array' });
+      const mes = $('#b-mes').value || 'todos';
+      saveBlob(`Vales de caja ${mes}.xlsx`, buf);
+      toast('Excel generado');
+    } catch (err) {
+      toast('No se pudo generar el Excel (se necesita internet para cargar la librería).');
+    } finally { btn.disabled = false; btn.textContent = 'Exportar detalle'; }
+  });
+
+  // ---------- usuarios y roles ----------
+  const USERS = [...ROSTER, { k: 'DAYANA MOROCHO', n: 'Dayana Morocho', t: ['dayana', 'morocho'] }, { k: 'KELLER HERRERA', n: 'Keller Herrera', t: ['keller', 'herrera'] }];
+  const ROL_TXT = { tecnico: 'Técnico', supervisor: 'Supervisor', revisor: 'Revisión', aprobador: 'Aprobador' };
+  const uidOf = k => k.replace(/ /g, '_');
+  const FULL = { 'FELIX RODRIGUEZ': 'FELIX ENRIQUE RODRIGUEZ GONZABAY', 'FRANKLIN LOJAN': 'FRANKLIN ANIBAL LOJAN GRANDA', 'HUMBERTO REYES': 'HUMBERTO RAFAEL REYES SUAREZ', 'JINSON VERA': 'JINSON MANUEL VERA REYES', 'YORDAN URETA': 'URETA MACAY YORDAN JAVIER' };
+
+  // ---------- servidor (Cloudflare Worker + D1): un documento por ruta, con sondeo cada 10 s ----------
+  const Api = (() => {
+    const BASE = String((window.VALE_CONFIG || {}).api || '').replace(/\/+$/, '');
+    let token = null, ver = -1, busy = false, again = false, lost = null;
+    const subs = [];
+    const segs = p => p.split('/').filter(Boolean);
+    const rid = () => (crypto.randomUUID ? crypto.randomUUID().slice(0, 8) : String(Date.now()));
+
+    async function call(path, method, body) {
+      let r;
+      try {
+        r = await fetch(BASE + path, { method, headers: { ...(body ? { 'Content-Type': 'application/json' } : {}), ...(token ? { Authorization: 'Bearer ' + token } : {}) }, body: body ? JSON.stringify(body) : undefined });
+      } catch { throw { code: 'red' }; }
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        if (r.status === 401 && j.error === 'sesion' && lost) lost();
+        throw { code: j.error || 'error', status: r.status, message: j.mensaje };
+      }
+      return j;
+    }
+
+    // Pregunta al servidor por todas las colecciones vigiladas. Si nada cambió responde "unchanged" (1 lectura en D1).
+    async function poll() {
+      if (!token || !subs.length) return;
+      if (busy) { again = true; return; }
+      busy = true;
+      try {
+        const lista = subs.slice(), nuevo = lista.some(s => s.sig === null);
+        const body = { ver: nuevo ? -1 : ver, subs: lista.map(s => ({ path: s.path, q: s.q ? { f: s.q.f, v: s.q.v } : undefined, have: Object.fromEntries([...s.cache].map(([id, d]) => [id, d.mod + ':' + d.size])) })) };
+        let r;
+        try { r = await call('/api/sync', 'POST', body); }
+        catch (e) { for (const s of lista) if (s.err) s.err({ code: e.code === 'red' ? 'disco' : e.code }); return; }
+        if (r.unchanged) return;
+        let ok = true;
+        r.subs.forEach((res, i) => {
+          const s = lista[i];
+          if (res.error) { ok = false; if (s.err) s.err({ code: res.error }); return; }
+          const m = new Map();
+          for (const d of res.docs) m.set(d.id, d.data !== undefined ? d : { ...s.cache.get(d.id), mod: d.mod, size: d.size });
+          s.cache = m;
+          const sig = res.docs.map(d => d.id + ':' + d.mod + ':' + d.size).join('|');
+          if (sig === s.sig) return;
+          s.sig = sig;
+          s.next({ docs: [...m.entries()].map(([id, d]) => ({ id, data: () => d.data })) });
+        });
+        if (ok) ver = r.ver;
+      } finally { busy = false; if (again) { again = false; poll(); } }
+    }
+
+    async function setDoc(path, data) { await call('/api/doc', 'PUT', { path, data }); ver = -1; poll(); }
+    async function delDoc(path) { await call('/api/doc?path=' + encodeURIComponent(path), 'DELETE'); ver = -1; poll(); }
+    function sub(path, q, next, err) { const o = { path, q, next, err, sig: null, cache: new Map() }; subs.push(o); poll(); return () => { const i = subs.indexOf(o); if (i >= 0) subs.splice(i, 1); }; }
+    const db = {
+      doc: path => ({ path, id: segs(path).pop(), set: d => setDoc(path, d), delete: () => delDoc(path) }),
+      collection: path => ({
+        doc: id => db.doc(path + '/' + (id || rid())),
+        where: (f, op, v) => ({ onSnapshot: (n, e) => sub(path, { f, op, v }, n, e) }),
+        onSnapshot: (n, e) => sub(path, null, n, e),
+      }),
+    };
+
+    async function login(k, clave) { const j = await call('/api/login', 'POST', { k, clave }); token = j.token; return j.user; }
+    async function resume(t) { token = t; try { return (await call('/api/me', 'GET')).user; } catch (e) { token = null; if (e.code === 'red') throw e; return null; } }
+    setInterval(() => { if (!document.hidden) poll(); }, 10000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+    return {
+      login, resume, db, poll,
+      token: () => token,
+      onLost: f => { lost = f; },
+      cambiarClave: (actual, nueva) => call('/api/clave', 'POST', { actual, nueva }),
+      configured: !!BASE && !/TU-CUENTA/.test(BASE),
+    };
+  })();
+
+  async function cambiarClaveUI() {
+    const actual = prompt('Clave actual:'); if (actual == null) return;
+    const nueva = prompt('Clave nueva (mínimo 6 caracteres):'); if (nueva == null) return;
+    try { await Api.cambiarClave(actual, nueva); toast('Clave cambiada'); } catch (e) { toast(e.message || writeErr(e)); }
+  }
+
+  function saveBlob(filename, buf) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([buf], { type: 'application/octet-stream' }));
+    a.download = filename; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }
+
+  // ---------- render loop ----------
+  let pending = false, seq = 0;
+  function schedule() { if (pending) return; pending = true; setTimeout(async () => { pending = false; await render(); }, 40); }
+  async function render() {
+    ++seq;
+    renderMis(); renderBandeja(); renderProg(); renderDetail(); refreshFormHead();
+    if (S.ready && S.tab === 'nuevo') renderActs();
+  }
+
+  // ---------- data ----------
+  function watchTech(uid) {
+    if (S.subs.has(uid)) return;
+    const onErr = e => { if (e && e.code === 'revoked') notice([h('b', { text: 'Se cerró el acceso. ' }), 'Recarga la página.']); };
+    const u1 = S.db.collection(`vales/${uid}/items`).onSnapshot(snap => { const m = new Map(); for (const d of snap.docs) m.set(d.id, d.data()); if (m.size || uid === S.uid) S.items.set(uid, m); else S.items.delete(uid); schedule(); }, onErr);
+    const u2 = S.db.collection(`aprobaciones/${uid}/items`).onSnapshot(snap => { const m = new Map(); for (const d of snap.docs) m.set(d.id, d.data()); S.aprob.set(uid, m); schedule(); }, onErr);
+    S.subs.set(uid, [u1, u2]);
+  }
+
+  async function boot(u) {
+    S.uid = uidOf(u.k); S.rol = u.rol;
+    S.isAdmin = S.rol === 'supervisor'; S.canApprove = S.rol === 'aprobador'; S.isTec = S.rol === 'tecnico' || S.rol === 'supervisor'; S.canViewAll = S.rol !== 'tecnico';
+    S.db = Api.db; S.me = { name: u.n }; Api.onLost(() => { try { sessionStorage.removeItem('vc-token'); } catch {} location.reload(); });
+    S.names = Object.fromEntries(USERS.map(x => [uidOf(x.k), x.n]));
+    document.body.classList.remove('locked'); $('#login').hidden = true;
+    $('#who').replaceChildren(h('span', { class: 'av', text: u.n.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() }), h('span', { class: 'nm', text: u.n }), h('span', { class: 'role', text: ROL_TXT[S.rol] }),
+      h('button', { class: 'logout', type: 'button', text: 'Clave', onclick: cambiarClaveUI }), h('button', { class: 'logout', type: 'button', text: 'Salir', onclick: () => { try { sessionStorage.removeItem('vc-token'); } catch {} location.reload(); } }));
+    $('#t-nuevo').hidden = !S.isTec; $('#t-mis').hidden = !S.isTec;
+    $('#t-prog').hidden = !S.canViewAll; $('#t-bandeja').hidden = !S.canViewAll;
+    $('#p-form').hidden = !S.isAdmin;
+    $('#b-export').hidden = !S.canViewAll; $('#b-export2').hidden = !S.canViewAll;
+    $('#b-mes').value = store.get('vc-b-mes') ?? today().slice(0, 7);
+    $('#b-est').value = store.get('vc-b-est') || '';
+    S.ready = true;
+    S.tec = S.isTec ? u.k : null;
+    F.tec.replaceChildren(...ROSTER.map(r => h('option', { value: r.k, text: r.n }))); F.tec.value = S.tec || ''; $('#ln-tec').hidden = true;
+    resetForm();
+    const desde = new Date(Date.now() - 180 * 864e5); S.progDesde = new Date(desde.getTime() - desde.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+    S.db.collection('programacion').where('fecha', '>=', S.progDesde).onSnapshot(snap => { S.prog = new Map(snap.docs.map(d => [d.id, d.data()])); schedule(); });
+    if (S.isTec) { S.items.set(S.uid, new Map()); watchTech(S.uid); }
+    if (S.canViewAll) {
+      for (const sel of ['#p-tec', '#p-ftec']) $(sel).append(...ROSTER.map(r => h('option', { value: r.k, text: r.n })));
+      $('#p-labs').replaceChildren(...Object.keys(LAB_NOM).sort().map(l => h('option', { value: l, label: l + ' · ' + LAB_NOM[l] })));
+      $('#p-fecha').value = today(); $('#p-mes').value = store.get('vc-p-mes') ?? today().slice(0, 7);
+      $('#p-fvale').value = store.get('vc-p-fvale') || '';
+      S.db.collection('vales').onSnapshot(snap => { for (const d of snap.docs) watchTech(d.id); schedule(); });
+    }
+    const lastTab = store.get('vc-tab'), ok = t => (t === 'nuevo' || t === 'mis') ? S.isTec : S.canViewAll;
+    setTab(lastTab && ok(lastTab) ? lastTab : (S.canViewAll ? 'bandeja' : 'nuevo'));
+    schedule();
+  }
+
+  // Fecha en formato dd/mm/aaaa (el campo nativo usa el idioma del navegador); .value sigue entregando y recibiendo aaaa-mm-dd
+  function fechaEs(el) {
+    const d = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+    const toIso = t => { const m = t.match(/^(\d{2})\/(\d{2})\/(\d{4})$/); if (!m) return ''; const dt = new Date(+m[3], +m[2] - 1, +m[1]); return dt.getFullYear() === +m[3] && dt.getMonth() === +m[2] - 1 && dt.getDate() === +m[1] ? m[3] + '-' + m[2] + '-' + m[1] : ''; };
+    Object.defineProperty(el, 'value', { get() { return toIso(d.get.call(el)); }, set(v) { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(v || ''); d.set.call(el, m ? m[3] + '/' + m[2] + '/' + m[1] : ''); } });
+    el.addEventListener('input', () => {
+      let t = d.get.call(el).replace(/\D/g, '').slice(0, 8);
+      if (t.length > 4) t = t.slice(0, 2) + '/' + t.slice(2, 4) + '/' + t.slice(4); else if (t.length > 2) t = t.slice(0, 2) + '/' + t.slice(2);
+      d.set.call(el, t);
+      if (t.length === 10) el.dispatchEvent(new Event('change'));
+    });
+  }
+
+  async function start() {
+    fechaEs($('#f-fecha')); fechaEs($('#p-fecha'));
+    S.progDesde = '0000-00-00';
+    const err = $('#l-err');
+    if (!Api.configured) err.textContent = 'Falta configurar la dirección del servidor en config.js.';
+    $('#login-form').addEventListener('submit', async e => {
+      e.preventDefault(); err.textContent = '';
+      const inp = norm($('#l-user').value).replace(/\s+/g, ' ').trim();
+      const u = inp.length > 4 && USERS.find(x => x.t.every(t => inp.includes(t)));
+      if (!u) { err.textContent = 'Usuario o clave incorrectos. Escribe tu nombre y apellido.'; return; }
+      const btn = $('#login-form button[type="submit"]'); btn.disabled = true;
+      try {
+        const me = await Api.login(u.k, $('#l-pass').value);
+        try { sessionStorage.setItem('vc-token', Api.token()); } catch {}
+        await boot({ k: me.k, n: me.nombre, rol: me.rol });
+      } catch (ex) {
+        err.textContent = ex.code === 'credenciales' ? 'Usuario o clave incorrectos.' : ex.code === 'red' ? 'No hay conexión con el servidor. Revisa tu internet.' : (ex.message || 'No se pudo ingresar.');
+      } finally { btn.disabled = false; }
+    });
+    let t = null; try { t = sessionStorage.getItem('vc-token'); } catch {}
+    if (t) { try { const me = await Api.resume(t); if (me) { await boot({ k: me.k, n: me.nombre, rol: me.rol }); return; } } catch {} }
+    $('#l-user').focus();
+  }
+
+  S.uid = undefined;
+  start().catch(() => { $('#l-err').textContent = 'No se pudo iniciar. Recarga la página.'; });
+})();
+</script>
+</body></html>
