@@ -866,7 +866,7 @@ body.locked > header.top, body.locked > main { display: none; }
       F.concepto.readOnly = true; F.concepto.value = conceptoEsp();   // en este vale el concepto no se escribe: siempre sale de lo elegido
     } else {
       F.concepto.readOnly = false;
-      if (S.espPrev) F.benef.value = store.get('vc-benef') || S.me?.name || '';
+      if (S.espPrev) F.benef.value = store.get('vc-benef-' + S.uid) || S.me?.name || '';
       $('#f-check').hidden = false; syncRubro();
       if (S.espPrev) { F.concepto.value = ''; S.autoConcepto = true; }
       renderActs();
@@ -960,8 +960,8 @@ body.locked > header.top, body.locked > main { display: none; }
   function resetForm() {
     S.editing = null;
     F.monto.value = ''; F.concepto.value = ''; F.fecha.value = today();
-    F.ciudad.value = store.get('vc-ciudad') || '';
-    F.benef.value = store.get('vc-benef') || S.me?.name || '';
+    F.ciudad.value = store.get('vc-ciudad-' + S.uid) || '';
+    F.benef.value = store.get('vc-benef-' + S.uid) || S.me?.name || '';
     F.recibide.value = 'NATURISA S.A.';
     F.cat.value = 'REVISION LABORATORIOS'; F.rubro.value = 'PEAJES'; S.autoCat = true; syncRubro();
     selActs = new Set(); S.autoMonto = true; S.autoConcepto = true; F.just.value = '';
@@ -1032,7 +1032,7 @@ body.locked > header.top, body.locked > main { display: none; }
         await col.doc().set({ ...v, numero, uid: S.uid, creado: now, actualizado: now, rev: 1 });
       }
       await S.db.doc(`vales/${S.uid}`).set({ uid: S.uid, actualizado: now });
-      store.set('vc-ciudad', v.ciudad); store.set('vc-benef', v.beneficiario); store.set('vc-cat', v.categoria);
+      store.set('vc-ciudad-' + S.uid, v.ciudad); if (!v.especial) store.set('vc-benef-' + S.uid, v.beneficiario);
       toast(`${pad4(numero)} enviado al supervisor · ${money(v.monto)}`);
       resetForm(); setTab('mis');
     } catch (err) {
