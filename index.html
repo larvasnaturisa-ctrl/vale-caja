@@ -193,6 +193,68 @@ tbody tr:hover { background: color-mix(in srgb, var(--paper) 60%, transparent); 
 .add-prog { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-top: 12px; padding: 12px; background: var(--paper); border-radius: 10px; }
 .btn.x { padding: 3px 9px; font-size: 13px; background: none; color: var(--bad); border: 1px solid var(--line); }
 
+/* ---------- calendario (aspecto del sistema Naturisa) ---------- */
+.box .in input.cal-in, .fld input.cal-in { padding-right: 32px; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%233a6ea5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='5' width='16' height='16' rx='2'/%3E%3Cpath d='M16 3v4M8 3v4M4 11h16'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 18px; }
+.cal-pop { position: absolute; z-index: 60; width: 268px; background: var(--field); border: 1px solid var(--line); border-radius: 8px; padding: 10px; box-shadow: 0 4px 16px rgba(14, 79, 151, .18); color: var(--text); font-size: 13px; }
+.cal-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.cal-hd b { font-weight: 600; font-size: 14px; text-transform: capitalize; }
+.cal-nv { width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 6px; background: var(--field); color: var(--text); cursor: pointer; font-size: 18px; line-height: 1; padding: 0; display: grid; place-items: center; }
+.cal-nv:hover { background: var(--paper); }
+.cal-g { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
+.cal-g.m { grid-template-columns: repeat(3, 1fr); }
+.cal-w { font-size: 11px; color: var(--muted); height: 26px; line-height: 26px; }
+.cal-d { height: 32px; margin: 1px; border: 2px solid transparent; border-radius: 6px; background: none; color: var(--text); cursor: pointer; font: inherit; padding: 0; }
+.cal-g.m .cal-d { height: 42px; }
+.cal-d:hover { background: var(--paper); }
+.cal-d.o { color: color-mix(in srgb, var(--muted) 55%, transparent); }
+.cal-d.t { font-weight: 600; color: var(--ink-strong); }
+.cal-d.s { background: #2b72b5; color: #fff; border-color: #a9cbea; font-weight: 600; }
+.cal-ft { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--rule); }
+.cal-ft button { border: 0; background: none; padding: 0; font-size: 12.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
+/* ---------- selectores con casillas, rangos de fecha, bandeja y vale especial ---------- */
+.msf { position: relative; display: inline-block; min-width: 170px; max-width: 280px; }
+.msf-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 38px; border: 1.5px solid var(--line); background: var(--field); border-radius: 8px; padding: 6px 10px; font-size: 14px; font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--text); cursor: pointer; text-align: left; }
+.msf-btn.open { border-color: var(--ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 25%, transparent); }
+.msf-btn span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msf-btn span.ph { color: var(--muted); }
+.chev { width: 7px; height: 7px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: rotate(45deg); margin: -3px 2px 0 6px; flex: none; }
+.ln .msf { flex: 1 1 260px; max-width: 420px; }
+.rng { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.rng-c { display: flex; gap: 10px; }
+.pp { position: absolute; z-index: 70; width: 270px; background: var(--field); border: 1px solid var(--line); border-radius: 8px; padding: 6px 0 4px; box-shadow: 0 4px 16px rgba(14, 79, 151, .18); color: var(--text); font-size: 13.5px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+.pp-h { display: flex; align-items: center; gap: 8px; padding: 4px 8px 8px; border-bottom: 1px solid var(--rule); }
+.pp-s { flex: 1; display: flex; align-items: center; border: 2px solid var(--ink); border-radius: 8px; height: 32px; padding: 0 8px; background: var(--field); }
+.pp-s input { border: 0; outline: 0; flex: 1; min-width: 0; background: none; font-size: 13.5px; padding: 0; }
+.pp-x { border: 0; background: none; cursor: pointer; font-size: 20px; color: var(--muted); line-height: 1; padding: 2px 6px; margin-left: auto; }
+.pp-l { max-height: 210px; overflow: auto; padding: 4px 0; }
+.pp-i { display: flex; align-items: center; gap: 10px; padding: 7px 12px; cursor: pointer; }
+.pp-i:hover { background: var(--paper); }
+.pp-i.on { background: color-mix(in srgb, var(--ink) 12%, var(--field)); font-weight: 600; }
+.pp-c { width: 18px; height: 18px; border: 1.5px solid var(--line); border-radius: 4px; background: var(--field); display: inline-grid; place-items: center; flex: none; color: var(--field); font-size: 12px; line-height: 1; }
+.pp-c.on, .pp-c.mid { background: var(--ink-strong); border-color: var(--ink-strong); }
+.pp-e { padding: 8px 12px; color: var(--muted); }
+.v-tag { display: inline-block; margin-left: 12px; font: 600 13px var(--f-body); letter-spacing: .1em; color: var(--ink-strong); border-left: 2px solid var(--ink); padding-left: 10px; vertical-align: middle; text-transform: uppercase; }
+.esp-bar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+.btn.ghost.on { background: var(--ink); color: var(--field); border-color: var(--ink); }
+.selsum { display: grid; grid-template-columns: 1fr 1fr; text-align: center; background: var(--field); border: 1px solid var(--rule); border-radius: 10px; padding: 8px 0; margin-top: 12px; }
+.selsum span { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.selsum b { display: block; font: 600 20px var(--f-mono); margin-top: 2px; }
+.bulk { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 10px; padding: 9px 12px; border-radius: 8px; background: color-mix(in srgb, var(--ink) 12%, var(--field)); border: 1px solid var(--line); }
+.bulk .sp { flex: 1; }
+.bulk textarea { flex: 1 1 100%; border: 1.5px solid var(--line); border-radius: 8px; background: var(--field); padding: 8px 10px; min-height: 52px; }
+.bt th { background: #17375e; color: #fff; }
+.bt th.num { text-align: right; }
+.th-f { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.fbtn { border: 0; background: none; color: #fff; opacity: .7; cursor: pointer; padding: 2px; line-height: 0; }
+.fbtn.on { opacity: 1; color: #7fc1ff; }
+.bchk { width: 18px; height: 18px; border: 1.5px solid var(--line); border-radius: 4px; background: var(--field); display: inline-grid; place-items: center; color: var(--field); font-size: 12px; line-height: 1; cursor: pointer; vertical-align: middle; }
+.bchk.on, .bchk.mid { background: var(--ink-strong); border-color: var(--ink-strong); }
+.bchk.off { background: var(--paper); border-color: var(--rule); cursor: not-allowed; }
+.bt th .bchk { border-color: #fff; background: none; color: #fff; }
+.bt th .bchk.on, .bt th .bchk.mid { background: #fff; color: #17375e; }
+.bt tr.sel td { background: color-mix(in srgb, var(--ink) 10%, var(--field)); }
+.bt tr.tot td { font-weight: 600; background: var(--paper); cursor: default; }
+
 /* ---------- login ---------- */
 body.locked > header.top, body.locked > main { display: none; }
 .login { position: fixed; inset: 0; z-index: 40; background: var(--ground); display: grid; place-items: center; padding: 16px; overflow-y: auto; }
@@ -261,9 +323,10 @@ body.locked > header.top, body.locked > main { display: none; }
   <!-- NUEVO VALE -->
   <section id="tab-nuevo">
     <form class="vale" id="form" novalidate autocomplete="off">
+      <div class="esp-bar" id="esp-bar" hidden><button type="button" class="btn ghost" id="f-esp">Alimentación / Peaje</button></div>
       <div class="v-head">
         <div>
-          <h1 class="v-title">Vale de Caja</h1>
+          <h1 class="v-title">Vale de Caja<span class="v-tag" id="f-tag" hidden></span></h1>
           <div class="v-num" id="f-num">N° —</div>
         </div>
         <div class="usd">
@@ -284,9 +347,12 @@ body.locked > header.top, body.locked > main { display: none; }
         <div class="ln"><label for="f-recibide">Recibí(mos) de:</label><input id="f-recibide" value="NATURISA S.A."></div>
         <div class="ln"><span class="lb">El valor de:</span><span class="val letras empty" id="f-letras">Se escribe solo al ingresar el monto</span><span class="suf">dólares.</span></div>
         <div class="ln" id="ln-tec" hidden><label for="f-tec">Técnico:</label><select id="f-tec"></select></div>
-        <div class="ln col"><span class="lb">Actividades programadas:</span><div class="acts" id="f-acts"></div></div>
+        <div class="ln" id="ln-pers" hidden><span class="lb">Personal:</span><div id="f-pers"></div></div>
+        <div class="ln" id="ln-tipos" hidden><span class="lb">Tipo de actividad:</span><div id="f-tipos"></div></div>
+        <div class="ln" id="ln-labs" hidden><span class="lb">Laboratorios:</span><div id="f-labs"></div></div>
+        <div class="ln col" id="ln-acts"><span class="lb">Actividades programadas:</span><div class="acts" id="f-acts"></div></div>
         <div class="check" id="f-check" aria-live="polite"></div>
-        <div class="ln"><label for="f-cat">Tipo de actividad:</label>
+        <div class="ln" id="ln-cat"><label for="f-cat">Tipo de actividad:</label>
           <select id="f-cat">
             <option>REVISION LABORATORIOS</option><option>COSECHA LABORATORIO</option><option>PEAJES Y ALIMENTACION</option>
           </select>
@@ -327,19 +393,18 @@ body.locked > header.top, body.locked > main { display: none; }
     <div class="sec-h"><h2>Programación diaria</h2><p>Los técnicos solo registran vales sobre estas actividades</p></div>
     <form class="add-prog" id="p-form" autocomplete="off">
       <label class="fld">Fecha<input type="text" id="p-fecha" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" size="10"></label>
-      <label class="fld">Técnico<select id="p-tec"></select></label>
-      <label class="fld">Laboratorio<input id="p-lab" list="p-labs" size="8" placeholder="LQ4"></label>
-      <datalist id="p-labs"></datalist>
-      <label class="fld">Actividad<select id="p-act"><option>REVISION</option><option>COSECHO</option><option>LIBRE</option></select></label>
+      <div class="fld">Técnico<div id="p-tec"></div></div>
+      <div class="fld">Laboratorio<div id="p-lab"></div></div>
+      <div class="fld">Actividad<div id="p-act"></div></div>
       <button class="btn" type="submit">Agregar</button>
       <button class="btn ghost" type="button" id="p-import">Importar Excel</button>
       <input type="file" id="p-file" accept=".xlsx,.xls" hidden>
-      <span class="err" id="p-err" role="alert"></span>
+      <span class="hint" id="p-prev"></span><span class="err" id="p-err" role="alert"></span>
     </form>
     <div class="filters" style="margin-top:14px">
-      <label class="fld">Mes<input type="month" id="p-mes"></label>
-      <label class="fld">Técnico<select id="p-ftec"><option value="">Todos</option></select></label>
-      <label class="fld">Vale<select id="p-fvale"><option value="">Todos</option><option value="sin">Sin vale</option><option value="con">Con vale</option></select></label>
+      <div class="fld">Fecha<div id="p-rng"></div></div>
+      <div class="fld">Técnico<div id="p-ftec"></div></div>
+      <div class="fld">Vale<div id="p-fvale"></div></div>
     </div>
     <div id="p-table"></div>
   </section>
@@ -348,13 +413,14 @@ body.locked > header.top, body.locked > main { display: none; }
   <section id="tab-bandeja" hidden>
     <div class="sec-h"><h2>Bandeja de aprobación</h2><p>Vales de todos los técnicos</p></div>
     <div class="filters">
-      <label class="fld">Mes<input type="month" id="b-mes"></label>
-      <label class="fld">Técnico<select id="b-tec"><option value="">Todos</option></select></label>
-      <label class="fld">Estado<select id="b-est"><option value="">Todos</option><option value="pendiente">Pendiente</option><option value="aprobado">Aprobado</option><option value="rechazado">Rechazado</option></select></label>
+      <div class="fld">Fecha<div id="b-rng"></div></div>
+      <div class="fld">Técnico<div id="b-tec"></div></div>
+      <div class="fld">Estado<div id="b-est"></div></div>
       <button class="btn ghost" id="b-export" type="button" hidden>Exportar detalle</button>
       <button class="btn" id="b-export2" type="button" hidden>Exportar formato de gastos</button>
     </div>
     <div class="tiles" id="b-tiles"></div>
+    <div id="b-sel"></div>
     <div id="b-table"></div>
   </section>
 </main>
@@ -526,6 +592,7 @@ body.locked > header.top, body.locked > main { display: none; }
 
   // ---------- validación recalculada (no se confía en las banderas guardadas) ----------
   function validacion(v) {
+    if (v.especial) return { prog: true, tope: null, excede: false, esp: true };
     const ids = v.actividades || [];
     const ok = ids.length > 0 && ids.every(id => {
       const a = S.prog.get(id);
@@ -536,12 +603,14 @@ body.locked > header.top, body.locked > main { display: none; }
   }
   function valChips(v) {
     const x = validacion(v), box = h('span', {});
+    if (x.esp) { box.append(h('span', { class: 'vchip ok', text: 'Alimentación / Peaje' })); return box; }
     box.append(h('span', { class: 'vchip ' + (x.prog ? 'ok' : 'warn'), text: x.prog ? 'Programada' : 'Sin programación' }));
     if (x.excede) box.append(h('span', { class: 'vchip bad', text: 'Excede tarifa' }));
     else if (x.tope != null) box.append(h('span', { class: 'vchip ok', text: 'Dentro de tarifa' }));
     return box;
   }
   function valTexto(v) {
+    if (v.especial) return 'Vale especial (alimentación / peaje)';
     const x = validacion(v);
     return [x.prog ? 'Programada' : 'Sin programación', x.excede ? 'Excede tarifa (' + x.tope + ')' : (x.tope != null ? 'Dentro de tarifa' : '')].filter(Boolean).join(' · ');
   }
@@ -615,6 +684,132 @@ body.locked > header.top, body.locked > main { display: none; }
   })();
   $('#pad-clear').addEventListener('click', () => pad.clear());
 
+  // ---------- listas con casillas (selección múltiple) y rangos de fecha, con el formato del sistema Naturisa ----------
+  const Pop = (() => {
+    const pop = h('div', { class: 'pp', hidden: true });
+    document.body.append(pop);
+    let cur = null;
+    const chk = (on, mid) => h('span', { class: 'pp-c' + (on ? ' on' : mid ? ' mid' : ''), text: on ? '✓' : mid ? '–' : '' });
+    function close() { if (!cur) return; const c = cur; cur = null; pop.hidden = true; pop.replaceChildren(); if (c.onClose) c.onClose(); }
+    function place() {
+      const a = cur.anchor; if (!a.isConnected) return;
+      const r = a.getBoundingClientRect(), w = pop.offsetWidth || 270;
+      pop.style.top = (window.scrollY + r.bottom + 4) + 'px';
+      pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - w - 8)) + 'px';
+    }
+    function draw(focus) {
+      const c = cur, q = c.q.toLowerCase();
+      const shown = c.opts.filter(o => !q || o.t.toLowerCase().includes(q));
+      const all = c.multi && c.opts.length > 0 && c.sel.size === c.opts.length, mid = c.multi && c.sel.size > 0 && !all;
+      const head = h('div', { class: 'pp-h' });
+      if (c.multi) head.append(h('span', { role: 'checkbox', 'aria-label': 'Seleccionar todos', style: 'display:inline-flex;cursor:pointer', onclick: () => { c.sel = new Set(all ? [] : c.opts.map(o => o.v)); c.onChange([...c.sel]); draw(); } }, chk(all, mid)));
+      if (c.search !== false) { const inp = h('input', { placeholder: 'Buscar...', id: 'pp-q', 'aria-label': 'Buscar' }); inp.value = c.q; inp.addEventListener('input', () => { c.q = inp.value; draw(true); }); head.append(h('div', { class: 'pp-s' }, inp)); }
+      head.append(h('button', { type: 'button', class: 'pp-x', 'aria-label': 'Cerrar', text: '×', onclick: close }));
+      const list = h('div', { class: 'pp-l' }, shown.length ? shown.map(o => {
+        const on = c.sel.has(o.v);
+        return h('div', { class: 'pp-i' + (!c.multi && on ? ' on' : ''), onclick: () => { if (c.multi) { if (on) c.sel.delete(o.v); else c.sel.add(o.v); c.onChange([...c.sel]); draw(); } else { c.onChange([o.v]); close(); } } }, c.multi ? chk(on) : null, h('span', { text: o.t }));
+      }) : [h('div', { class: 'pp-e', text: 'Sin resultados' })]);
+      pop.replaceChildren(head, list); place();
+      if (focus) { const i = pop.querySelector('#pp-q'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
+    }
+    function show(anchor, cfg) {
+      if (cur && cur.anchor === anchor) { close(); return; }
+      close();
+      cur = { anchor, opts: cfg.opts || [], sel: new Set(cfg.sel || []), multi: !!cfg.multi, search: cfg.search, q: '', onChange: cfg.onChange, onClose: cfg.onClose };
+      pop.hidden = false; draw(true);
+    }
+    document.addEventListener('mousedown', e => { if (cur && !pop.contains(e.target) && !cur.anchor.contains(e.target)) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    window.addEventListener('resize', () => { if (cur) place(); });
+    return { show, close };
+  })();
+
+  const Ms = (() => {
+    const reg = new Map();
+    const get = s => reg.get(typeof s === 'string' ? $(s) : s);
+    function label(st) {
+      const n = st.sel.length;
+      if (!n) return st.ph;
+      if (n === 1) return (st.opts.find(o => o.v === st.sel[0]) || { t: st.sel[0] }).t;
+      if (st.opts.length && n === st.opts.length) return st.all + ' (' + n + ')';
+      return n + ' seleccionados';
+    }
+    function draw(st) { st.btn.replaceChildren(h('span', { class: st.sel.length ? '' : 'ph', text: label(st) }), h('i', { class: 'chev' })); }
+    function init(sel, cfg = {}) {
+      const el = $(sel); if (!el) return;
+      const st = { el, opts: cfg.opts || [], sel: [], multi: cfg.multi !== false, ph: cfg.ph || 'Seleccionar', all: cfg.all || 'Todos', search: cfg.search, onChange: cfg.onChange, key: cfg.key };
+      if (st.key) { try { const v = JSON.parse(store.get(st.key) || '[]'); if (Array.isArray(v)) st.sel = v.map(String); } catch {} }
+      el.classList.add('msf'); st.btn = h('button', { type: 'button', class: 'msf-btn' }); el.replaceChildren(st.btn);
+      st.btn.addEventListener('click', () => {
+        const was = st.btn.classList.contains('open');
+        Pop.show(st.btn, { opts: st.opts, sel: st.sel, multi: st.multi, search: st.search, onChange: v => { st.sel = v; if (st.key) store.set(st.key, JSON.stringify(v)); draw(st); if (st.onChange) st.onChange(v); }, onClose: () => st.btn.classList.remove('open') });
+        if (!was) st.btn.classList.add('open');
+      });
+      reg.set(el, st); draw(st);
+    }
+    return {
+      init,
+      vals: s => { const st = get(s); return st ? [...st.sel] : []; },
+      set(s, arr) { const st = get(s); if (st) { st.sel = [...arr]; draw(st); } },
+      setOpts(s, opts) { const st = get(s); if (st) { st.opts = opts; draw(st); } },
+    };
+  })();
+
+  // Filtro de fechas por rangos predefinidos (Hoy, Ayer, Semana, Mes…) o personalizado con calendario
+  const Rng = (() => {
+    const PRE = [['custom', 'Personalizado'], ['hoy', 'Hoy'], ['ayer', 'Ayer'], ['sem_ant', 'Semana anterior'], ['sem', 'Semana actual'], ['15d', 'Últimos 15 días'], ['mes_ant', 'Mes anterior'], ['mes', 'Mes actual'], ['anio', 'Año actual'], ['todos', 'Todos']];
+    const reg = new Map();
+    const p2 = n => String(n).padStart(2, '0');
+    const iso = d => d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
+    const add = (s, n) => { const d = new Date(s + 'T12:00:00'); d.setDate(d.getDate() + n); return iso(d); };
+    function calc(st) {
+      const t = today(), d = new Date(t + 'T12:00:00'), y = d.getFullYear(), m = d.getMonth();
+      const lunes = n => { const x = new Date(d); x.setDate(x.getDate() - ((x.getDay() + 6) % 7) + n); return iso(x); };
+      switch (st.p) {
+        case 'hoy': return [t, t];
+        case 'ayer': { const a = add(t, -1); return [a, a]; }
+        case 'sem': return [lunes(0), lunes(6)];
+        case 'sem_ant': return [lunes(-7), lunes(-1)];
+        case '15d': return [add(t, -14), t];
+        case 'mes': return [iso(new Date(y, m, 1, 12)), iso(new Date(y, m + 1, 0, 12))];
+        case 'mes_ant': return [iso(new Date(y, m - 1, 1, 12)), iso(new Date(y, m, 0, 12))];
+        case 'anio': return [y + '-01-01', y + '-12-31'];
+        case 'custom': return [st.desde || '', st.hasta || ''];
+        default: return ['', ''];
+      }
+    }
+    const save = st => store.set(st.key, JSON.stringify({ p: st.p, desde: st.desde, hasta: st.hasta }));
+    function draw(st) { st.btn.replaceChildren(h('span', { text: (PRE.find(p => p[0] === st.p) || [0, ''])[1] }), h('i', { class: 'chev' })); st.cust.hidden = st.p !== 'custom'; }
+    function init(sel, cfg) {
+      const el = $(sel); if (!el) return;
+      const st = { el, key: cfg.key, p: 'mes', desde: '', hasta: '', onChange: cfg.onChange, ins: {} };
+      try { const v = JSON.parse(store.get(st.key) || 'null'); if (v && PRE.some(p => p[0] === v.p)) Object.assign(st, { p: v.p, desde: v.desde || '', hasta: v.hasta || '' }); } catch {}
+      st.btn = h('button', { type: 'button', class: 'msf-btn' });
+      const mk = (lb, k) => {
+        const i = h('input', { type: 'text', inputmode: 'numeric', maxlength: '10', placeholder: 'dd/mm/aaaa', size: '10' });
+        fechaEs(i); Cal.attach(i, 'dia'); i.value = st[k]; st.ins[k] = i;
+        i.addEventListener('change', () => { st[k] = i.value; save(st); if (st.onChange) st.onChange(); });
+        return h('label', { class: 'fld' }, lb, i);
+      };
+      st.cust = h('span', { class: 'rng-c' }, mk('Desde', 'desde'), mk('Hasta', 'hasta'));
+      el.classList.add('rng'); el.replaceChildren(h('span', { class: 'msf' }, st.btn), st.cust);
+      st.btn.addEventListener('click', () => {
+        const was = st.btn.classList.contains('open');
+        Pop.show(st.btn, { opts: PRE.map(([v, t]) => ({ v, t })), sel: [st.p], multi: false, search: false,
+          onChange: v => {
+            st.p = v[0];
+            if (st.p === 'custom' && !st.desde && !st.hasta) { const [a, b] = calc({ p: 'mes' }); st.desde = a; st.hasta = b; st.ins.desde.value = a; st.ins.hasta.value = b; }
+            save(st); draw(st); if (st.onChange) st.onChange();
+          }, onClose: () => st.btn.classList.remove('open') });
+        if (!was) st.btn.classList.add('open');
+      });
+      reg.set(el, st); draw(st);
+    }
+    const range = s => { const st = reg.get($(s)); if (!st) return { desde: '', hasta: '' }; const [a, b] = calc(st); return { desde: a, hasta: b }; };
+    return { init, range, tag: s => { const r = range(s); return r.desde || r.hasta ? (r.desde + '_a_' + r.hasta).replace(/^_a_|_a_$/g, '') : 'todos'; } };
+  })();
+  const enRango = (f, r) => (!r.desde || (f || '') >= r.desde) && (!r.hasta || (f || '') <= r.hasta);
+
   // ---------- form ----------
   const F = {
     monto: $('#f-monto'), ciudad: $('#f-ciudad'), fecha: $('#f-fecha'), benef: $('#f-benef'),
@@ -636,6 +831,41 @@ body.locked > header.top, body.locked > main { display: none; }
   F.fecha.addEventListener('change', () => renderActs());
   F.tec.addEventListener('change', () => { S.tec = F.tec.value || null; store.set('vc-tec', S.tec || ''); renderActs(); });
   F.just.addEventListener('input', () => updateChecks());
+
+  // ---------- vale especial de alimentación / peaje (solo Félix) ----------
+  // Se activa con el botón "Alimentación / Peaje". Quien recibe es FELIX RODRIGUEZ; el desplegable "Personal" deja registrado a qué técnico se le devuelve el valor.
+  const ESP_TIPOS = [{ v: 'ALIMENTACION', t: 'Alimentación' }, { v: 'PEAJES', t: 'Peajes' }];
+  const rubroEsp = () => { const t = Ms.vals('#f-tipos'); return t.length === 2 ? 'PEAJES Y ALIMENTACION' : (t[0] || ''); };
+  function conceptoEsp() {
+    const labs = Ms.vals('#f-labs'), r = rubroEsp(), p = Ms.vals('#f-pers')[0];
+    if (!labs.length || !r) return '';
+    return `PAGO DE ${r} REVISION LARVAS LABORATORIOS ${labs.join(', ')}` + (p ? ' PERSONAL: ' + tecNombre(p).toUpperCase() : '');
+  }
+  function syncEsp() {
+    const on = !!S.esp;
+    $('#f-esp').classList.toggle('on', on);
+    for (const id of ['ln-pers', 'ln-tipos', 'ln-labs']) $('#' + id).hidden = !on;
+    $('#ln-acts').hidden = on; $('#ln-cat').hidden = on;
+    const tag = $('#f-tag'); tag.hidden = !on;
+    tag.textContent = on ? (Ms.vals('#f-tipos').map(v => ESP_TIPOS.find(t => t.v === v).t.toUpperCase()).join(' + ') || 'ALIMENTACIÓN / PEAJE') : '';
+    F.benef.readOnly = on;
+    if (on) {
+      F.benef.value = 'FELIX RODRIGUEZ';
+      $('#f-check').hidden = true; $('#ln-just').hidden = true; $('#ln-rubro').hidden = true;
+      if (S.autoConcepto) F.concepto.value = conceptoEsp();
+    } else {
+      if (S.espPrev) F.benef.value = store.get('vc-benef') || S.me?.name || '';
+      $('#f-check').hidden = false; syncRubro();
+      if (S.espPrev && S.autoConcepto) F.concepto.value = '';
+      renderActs();
+    }
+    S.espPrev = on;
+  }
+  function onEspChange() { if (S.esp) syncEsp(); }
+  $('#f-esp').addEventListener('click', () => {
+    if (!S.isAdmin) return;
+    S.esp = !S.esp; S.autoConcepto = true; syncEsp();
+  });
 
   // actividades ya cubiertas por otro vale vigente de este técnico
   const usoDe = (cat, rubro) => cat === PEAJES ? 'P:' + rubro : 'M';
@@ -684,6 +914,7 @@ body.locked > header.top, body.locked > main { display: none; }
     return 'MOVILIZACION REVISION LABORATORIOS ' + revs.join(', ') + extra;
   }
   function onSel() {
+    if (S.esp) { updateChecks(); return; }
     const c = curCtx();
     if (S.autoCat && c.ids.length) { F.cat.value = c.tipo === 'COSECHO' ? 'COSECHA LABORATORIO' : 'REVISION LABORATORIOS'; syncRubro(); }
     if (S.autoConcepto) F.concepto.value = c.ids.length ? conceptoAuto(curCtx()) : '';
@@ -691,6 +922,7 @@ body.locked > header.top, body.locked > main { display: none; }
     updateChecks();
   }
   function estadoChecks() {
+    if (S.esp) return { cls: 'ok', msg: '', needJust: false, c: { ids: [], labs: [], tipo: '', revs: [], cos: [], t: { v: null, sin: [] } } };
     const c = curCtx(), monto = Number(F.monto.value) || 0;
     if (!S.tec) return { cls: 'warn', msg: 'Elige tu nombre para validar contra la programación.', needJust: false, c };
     if (!c.ids.length) return { cls: 'warn', msg: progDelDia().length ? 'Marca arriba las actividades que realizaste. Si fue otra distinta, regístralo con justificación y el aprobador lo revisará aparte.' : 'Sin actividad programada para esta fecha. Puedes registrarlo, pero necesita justificación y el aprobador lo revisará aparte.', needJust: true, c };
@@ -708,7 +940,7 @@ body.locked > header.top, body.locked > main { display: none; }
   }
   function updateChecks() {
     const e = estadoChecks(), el = $('#f-check');
-    el.className = 'check ' + e.cls; el.textContent = e.msg;
+    el.className = 'check ' + e.cls; el.textContent = e.msg; el.hidden = !!S.esp;
     $('#ln-just').hidden = !e.needJust;
     return e;
   }
@@ -723,7 +955,7 @@ body.locked > header.top, body.locked > main { display: none; }
     selActs = new Set(); S.autoMonto = true; S.autoConcepto = true; F.just.value = '';
     pad.clear(); syncLetras(); $('#f-err').textContent = '';
     $('#f-cancel').hidden = true;
-    renderActs();
+    S.esp = false; Ms.set('#f-pers', []); Ms.set('#f-tipos', []); Ms.set('#f-labs', []); syncEsp();
     refreshFormHead();
   }
   function refreshFormHead() {
@@ -734,6 +966,15 @@ body.locked > header.top, body.locked > main { display: none; }
   }
   function readForm() {
     const monto = Math.round(Number(F.monto.value) * 100) / 100, e = estadoChecks();
+    if (S.esp) {
+      return {
+        monto, montoLetras: montoLetras(monto), ciudad: F.ciudad.value.trim(), fecha: F.fecha.value,
+        beneficiario: F.benef.value.trim(), recibiDe: F.recibide.value.trim(), categoria: PEAJES,
+        concepto: F.concepto.value.trim(), firma: pad.exportPng(),
+        tecnico: Ms.vals('#f-pers')[0] || null, actividades: [], labs: Ms.vals('#f-labs'), tipoActividad: 'PEAJES', rubro: rubroEsp(), especial: true,
+        programada: false, tarifaTope: null, excede: false, requiereJust: false, justificacion: '',
+      };
+    }
     return {
       monto, montoLetras: montoLetras(monto), ciudad: F.ciudad.value.trim(), fecha: F.fecha.value,
       beneficiario: F.benef.value.trim(), recibiDe: F.recibide.value.trim(), categoria: F.cat.value,
@@ -744,7 +985,11 @@ body.locked > header.top, body.locked > main { display: none; }
     };
   }
   function validar(v) {
-    if (!v.tecnico) return ['f-tec', 'Elige tu nombre en la lista de técnicos.'];
+    if (v.especial) {
+      if (!v.tecnico) return ['f-pers', 'Elige el técnico al que corresponde el valor.'];
+      if (!v.rubro) return ['f-tipos', 'Elige Alimentación, Peajes o ambos.'];
+      if (!v.labs.length) return ['f-labs', 'Elige al menos un laboratorio.'];
+    } else if (!v.tecnico) return ['f-tec', 'Elige tu nombre en la lista de técnicos.'];
     if (!(v.monto > 0)) return ['f-monto', 'Ingresa el monto en dólares.'];
     if (v.monto > 5000) return ['f-monto', 'El monto supera US$ 5,000. Revisa la cifra.'];
     if (!v.ciudad) return ['f-ciudad', 'Escribe la ciudad.'];
@@ -789,9 +1034,12 @@ body.locked > header.top, body.locked > main { display: none; }
     S.editing = { id, data: v };
     F.monto.value = v.monto; F.ciudad.value = v.ciudad || ''; F.fecha.value = v.fecha || today();
     F.benef.value = v.beneficiario || ''; F.recibide.value = v.recibiDe || ''; F.cat.value = v.categoria; if (!F.cat.value) F.cat.value = 'REVISION LABORATORIOS'; F.rubro.value = v.rubro || 'PEAJES'; S.autoCat = false; syncRubro(); F.concepto.value = v.concepto || '';
-    S.tec = v.tecnico || S.tec; F.tec.value = S.tec || ''; selActs = new Set(v.actividades || []);
+    if (!v.especial) { S.tec = v.tecnico || S.tec; F.tec.value = S.tec || ''; }
+    selActs = new Set(v.actividades || []);
+    S.esp = !!v.especial;
+    if (v.especial) { Ms.set('#f-pers', v.tecnico ? [v.tecnico] : []); Ms.set('#f-tipos', v.rubro === 'PEAJES Y ALIMENTACION' ? ['ALIMENTACION', 'PEAJES'] : (v.rubro ? [v.rubro] : [])); Ms.set('#f-labs', v.labs || []); }
     S.autoMonto = false; S.autoConcepto = false; F.just.value = v.justificacion || '';
-    renderActs();
+    S.espPrev = false; syncEsp();
     syncLetras(); $('#f-cancel').hidden = false; $('#f-err').textContent = '';
     closeDetail(); setTab('nuevo');
     requestAnimationFrame(() => { pad.resize(); pad.load(v.firma); });
@@ -821,6 +1069,7 @@ body.locked > header.top, body.locked > main { display: none; }
       h('div', { class: 'panel' },
         ln('Yo / Nosotros:', v.beneficiario || '—'),
         ln('Recibí(mos) de:', v.recibiDe || '—'),
+        v.especial ? ln('Personal:', tecNombre(v.tecnico)) : null,
         h('div', { class: 'ln' }, h('span', { class: 'lb', text: 'El valor de:' }), h('span', { class: 'val letras', text: v.montoLetras || montoLetras(v.monto) }), h('span', { class: 'suf', text: 'dólares.' })),
         ln('Tipo de actividad:', v.categoria || '—'),
         ln('Por concepto de:', v.concepto || '—')),
@@ -916,56 +1165,131 @@ body.locked > header.top, body.locked > main { display: none; }
       rows.map(([id, v]) => filaVale(S.uid, id, v)))));
   }
 
-  function bandejaRows() {
-    const mes = $('#b-mes').value, tec = $('#b-tec').value, est = $('#b-est').value, out = [];
-    for (const [uid, m] of S.items) {
-      if (tec && uid !== tec) continue;
-      for (const [id, v] of m) {
-        if (mes && (v.fecha || '').slice(0, 7) !== mes) continue;
-        const e = estadoDe(uid, id);
-        if (est && e !== est) continue;
-        out.push({ uid, id, v, e, a: S.aprob.get(uid)?.get(id) });
-      }
+  // ---------- bandeja de aprobación: filtros por columna y aprobación masiva (solo el aprobador) ----------
+  const B = { flt: {}, sel: new Set(), mode: null, note: '', busy: false };
+  const quien = (uid, v) => (v.especial && v.tecnico ? uidOf(v.tecnico) : uid);
+  const rkey = r => r.uid + '|' + r.id;
+  const BCOLS = [
+    ['t', 'Técnico', r => nombreDe(quien(r.uid, r.v), r.v)],
+    ['n', 'N°', r => String(r.v.numero || 0).padStart(4, '0')],
+    ['f', 'Fecha', r => fdate(r.v.fecha)],
+    ['c', 'Tipo', r => r.v.categoria || ''],
+    ['o', 'Concepto', r => r.v.concepto || ''],
+    ['m', 'Monto', r => money(r.v.monto)],
+    ['v', 'Validación', r => valTexto(r.v)],
+    ['e', 'Estado', r => ESTADOS[r.e]],
+  ];
+  const FUNNEL = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>';
+  const colOk = r => BCOLS.every(([k, , f]) => { const s = B.flt[k]; return !s || !s.length || s.includes(f(r)); });
+  const ordBandeja = (x, y) => ((x.e === 'pendiente') === (y.e === 'pendiente') ? 0 : (x.e === 'pendiente' ? -1 : 1)) || (y.v.fecha || '').localeCompare(x.v.fecha || '');
+
+  function bandejaBase() {
+    const rg = Rng.range('#b-rng'), tecs = Ms.vals('#b-tec'), ests = Ms.vals('#b-est'), out = [];
+    for (const [uid, m] of S.items) for (const [id, v] of m) {
+      if (!enRango(v.fecha, rg)) continue;
+      if (tecs.length && !tecs.includes(quien(uid, v))) continue;
+      const e = estadoDe(uid, id);
+      if (ests.length && !ests.includes(e)) continue;
+      out.push({ uid, id, v, e, a: S.aprob.get(uid)?.get(id) });
     }
-    return out.sort((x, y) => (x.e === 'pendiente') - (y.e === 'pendiente') ? (y.e === 'pendiente') - (x.e === 'pendiente') : (y.v.fecha || '').localeCompare(x.v.fecha || ''));
+    return out;
+  }
+  const bandejaRows = () => bandejaBase().filter(colOk).sort(ordBandeja);
+
+  async function bulk(estado, rows, nota) {
+    B.busy = true; renderBandeja();
+    let ok = 0, fail = 0;
+    for (const r of rows) { try { await setEstado(r.uid, r.id, estado, nota); ok++; } catch { fail++; } }
+    B.busy = false; B.sel.clear(); B.mode = null; B.note = '';
+    const pl = ok === 1 ? '' : 's';
+    toast(`${ok} vale${pl} ${estado === 'aprobado' ? 'aprobado' : 'rechazado'}${pl}` + (fail ? ` · ${fail} no se pudieron guardar, intenta de nuevo` : ''));
+    renderBandeja();
+  }
+
+  function barraSeleccion(chosen, csum) {
+    const nodes = [h('div', { class: 'selsum' }, h('div', {}, h('span', { text: 'Seleccionados' }), h('b', { text: String(chosen.length) })), h('div', {}, h('span', { text: 'Monto seleccionado' }), h('b', { text: money(csum) })))];
+    if (!chosen.length) return nodes;
+    const pl = chosen.length === 1 ? '' : 's', bar = h('div', { class: 'bulk' });
+    const btn = (cls, text, fn) => h('button', { class: 'btn sm ' + cls, type: 'button', text, disabled: B.busy, onclick: fn });
+    if (!B.mode) {
+      bar.append(h('span', {}, h('b', { text: String(chosen.length) }), ` vale${pl} seleccionado${pl} · ${money(csum)}`), h('span', { class: 'sp' }),
+        btn('ok', 'Aprobar seleccionados', () => { B.mode = 'ap'; renderBandeja(); }),
+        btn('bad', 'Rechazar…', () => { B.mode = 're'; renderBandeja(); }),
+        btn('ghost', 'Quitar selección', () => { B.sel.clear(); renderBandeja(); }));
+    } else if (B.mode === 'ap') {
+      bar.append(h('span', {}, '¿Aprobar ', h('b', { text: String(chosen.length) }), ` vale${pl} por `, h('b', { text: money(csum) }), '? Se da el Vto. Bno. a todos.'), h('span', { class: 'sp' }),
+        btn('ok', B.busy ? 'Aprobando…' : 'Confirmar aprobación', () => bulk('aprobado', chosen)),
+        btn('ghost', 'Volver', () => { B.mode = null; renderBandeja(); }));
+    } else {
+      const ta = h('textarea', { placeholder: 'Motivo del rechazo (lo verá cada técnico)' }); ta.value = B.note;
+      ta.addEventListener('input', () => { B.note = ta.value; err.textContent = ''; });
+      const err = h('span', { class: 'err' });
+      bar.append(h('span', {}, 'Rechazar ', h('b', { text: String(chosen.length) }), ` vale${pl}. El motivo lo verá cada técnico.`), h('span', { class: 'sp' }),
+        btn('bad', B.busy ? 'Rechazando…' : 'Confirmar rechazo', () => { if (!B.note.trim()) { err.textContent = 'Escribe el motivo.'; ta.focus(); return; } bulk('rechazado', chosen, B.note.trim()); }),
+        btn('ghost', 'Volver', () => { B.mode = null; renderBandeja(); }), ta, err);
+    }
+    nodes.push(bar); return nodes;
   }
 
   function renderBandeja() {
     if (!S.canViewAll) return;
-    const sel = $('#b-tec'), cur = sel.value;
-    const techs = [...S.items.keys()].map(uid => [uid, nombreDe(uid, [...(S.items.get(uid)?.values() || [])][0])]).sort((a, b) => a[1].localeCompare(b[1]));
-    sel.replaceChildren(h('option', { value: '', text: 'Todos' }), ...techs.map(([uid, n]) => h('option', { value: uid, text: n })));
-    sel.value = techs.some(([u]) => u === cur) ? cur : '';
-
-    const rows = bandejaRows();
+    const nm = new Map();
+    for (const [uid, m] of S.items) for (const v of m.values()) { const q = quien(uid, v); if (!nm.has(q)) nm.set(q, nombreDe(q, v)); }
+    Ms.setOpts('#b-tec', [...nm].sort((a, b) => a[1].localeCompare(b[1])).map(([v, t]) => ({ v, t })));
+    const base = bandejaBase(), rows = base.filter(colOk).sort(ordBandeja);
+    const pk = new Set(rows.filter(r => r.e === 'pendiente').map(rkey));
+    for (const k of [...B.sel]) if (!pk.has(k)) B.sel.delete(k);
     let allPend = 0;
     for (const [uid, m] of S.items) for (const id of m.keys()) if (estadoDe(uid, id) === 'pendiente') allPend++;
     $('#ct-band').textContent = allPend ? String(allPend) : '';
     const sum = st => rows.filter(r => !st || r.e === st).reduce((s, r) => s + (Number(r.v.monto) || 0), 0);
     const cnt = st => rows.filter(r => r.e === st).length;
+    const totSin = rows.filter(r => r.e !== 'rechazado').reduce((s, r) => s + (Number(r.v.monto) || 0), 0);
     const tile = (cls, lb, val, sub) => h('div', { class: 'tile ' + cls }, h('span', { text: lb }), h('b', { text: val }), h('small', { text: sub }));
     $('#b-tiles').replaceChildren(
       tile('t-pend', 'Por revisar', money(sum('pendiente')), `${cnt('pendiente')} vales`),
       tile('t-apr', 'Aprobado', money(sum('aprobado')), `${cnt('aprobado')} vales`),
-      tile('', 'Total del filtro', money(rows.filter(r => r.e !== 'rechazado').reduce((s, r) => s + (Number(r.v.monto) || 0), 0)), `${rows.length} vales · sin rechazados`));
-    if (!rows.length) {
-      $('#b-table').replaceChildren(h('div', { class: 'empty' }, h('b', { text: S.items.size ? 'No hay vales con este filtro' : 'Todavía no llegan vales' }), S.items.size ? 'Cambia el mes, técnico o estado.' : 'Cuando un técnico registre su vale aparecerá aquí para darle el Vto. Bno.'));
+      tile('', 'Total del filtro', money(totSin), `${rows.length} vales · sin rechazados`));
+    const chosen = rows.filter(r => B.sel.has(rkey(r))), csum = chosen.reduce((s, r) => s + (Number(r.v.monto) || 0), 0);
+    $('#b-sel').replaceChildren(...(S.canApprove ? barraSeleccion(chosen, csum) : []));
+    if (!base.length) {
+      $('#b-table').replaceChildren(h('div', { class: 'empty' }, h('b', { text: S.items.size ? 'No hay vales con este filtro' : 'Todavía no llegan vales' }), S.items.size ? 'Cambia la fecha, el técnico o el estado.' : 'Cuando un técnico registre su vale aparecerá aquí para darle el Vto. Bno.'));
       return;
     }
-    const tb = h('tbody', {}, rows.map(r => h('tr', { onclick: () => openDetail(r.uid, r.id) },
-      h('td', { text: nombreDe(r.uid, r.v) }),
-      h('td', { class: 'num', text: String(r.v.numero || 0).padStart(4, '0') }),
-      h('td', { text: fdate(r.v.fecha) }),
-      h('td', { text: r.v.ciudad || '' }),
-      h('td', { text: r.v.categoria || '' }),
-      h('td', { class: 'wrap', text: r.v.concepto || '' }),
-      h('td', { class: 'num', text: money(r.v.monto) }),
-      h('td', {}, valChips(r.v)),
-      h('td', {}, h('span', { class: 'pill p-' + r.e, text: ESTADOS[r.e] })))));
-    $('#b-table').replaceChildren(h('div', { class: 'tbl-wrap' }, h('table', {},
-      h('thead', {}, h('tr', {}, ['Técnico', 'N°', 'Fecha', 'Ciudad', 'Tipo', 'Concepto', 'Monto', 'Validación', 'Estado'].map((t, i) => h('th', { class: i === 1 || i === 6 ? 'num' : null, text: t })))), tb)));
+    const pend = rows.filter(r => r.e === 'pendiente'), allOn = pend.length > 0 && pend.every(r => B.sel.has(rkey(r))), someOn = pend.some(r => B.sel.has(rkey(r)));
+    const mkChk = (on, mid, off) => h('span', { class: 'bchk' + (on ? ' on' : mid ? ' mid' : '') + (off ? ' off' : ''), role: 'checkbox', 'aria-checked': String(!!on), text: on ? '✓' : mid ? '–' : '' });
+    const hs = [];
+    if (S.canApprove) {
+      const c = mkChk(allOn, someOn && !allOn, !pend.length); c.title = 'Seleccionar todos los pendientes de la lista';
+      c.addEventListener('click', e => { e.stopPropagation(); if (!pend.length) return; if (allOn) pend.forEach(r => B.sel.delete(rkey(r))); else pend.forEach(r => B.sel.add(rkey(r))); B.mode = null; renderBandeja(); });
+      hs.push(h('th', { style: 'width:34px' }, c));
+    }
+    for (const [k, name, f] of BCOLS) {
+      const act = (B.flt[k] || []).length, b = h('button', { type: 'button', class: 'fbtn' + (act ? ' on' : ''), 'aria-label': 'Filtrar ' + name });
+      b.innerHTML = FUNNEL;
+      b.addEventListener('click', e => {
+        e.stopPropagation();
+        const opts = [...new Set(base.map(f))].sort((x, y) => x.localeCompare(y, 'es', { numeric: true })).map(v => ({ v, t: v || '—' }));
+        Pop.show(b, { opts, sel: B.flt[k] || [], multi: true, onChange: v => { B.flt[k] = v; renderBandeja(); } });
+      });
+      hs.push(h('th', { class: k === 'n' || k === 'm' ? 'num' : null }, h('div', { class: 'th-f' }, h('span', { text: name }), b)));
+    }
+    const body = rows.map(r => {
+      const on = B.sel.has(rkey(r)), tr = h('tr', { class: on ? 'sel' : null, onclick: () => openDetail(r.uid, r.id) });
+      if (S.canApprove) {
+        const c = mkChk(on, false, r.e !== 'pendiente');
+        if (r.e === 'pendiente') c.addEventListener('click', e => { e.stopPropagation(); if (on) B.sel.delete(rkey(r)); else B.sel.add(rkey(r)); B.mode = null; renderBandeja(); });
+        tr.append(h('td', {}, c));
+      }
+      tr.append(h('td', { text: nombreDe(quien(r.uid, r.v), r.v) }), h('td', { class: 'num', text: String(r.v.numero || 0).padStart(4, '0') }), h('td', { text: fdate(r.v.fecha) }),
+        h('td', { text: r.v.categoria || '' }), h('td', { class: 'wrap', text: r.v.concepto || '' }), h('td', { class: 'num', text: money(r.v.monto) }),
+        h('td', {}, valChips(r.v)), h('td', {}, h('span', { class: 'pill p-' + r.e, text: ESTADOS[r.e] })));
+      return tr;
+    });
+    if (!rows.length) body.push(h('tr', {}, h('td', { colspan: String(BCOLS.length + (S.canApprove ? 1 : 0)), class: 'wrap', style: 'text-align:center;color:var(--muted)', text: 'Ningún vale coincide con los filtros de las columnas.' })));
+    else body.push(h('tr', { class: 'tot', style: 'cursor:default' }, S.canApprove ? h('td', {}) : null, h('td', { text: `Total ${rows.length}` }), h('td', {}), h('td', {}), h('td', {}), h('td', { class: 'wrap', text: 'sin rechazados' }), h('td', { class: 'num', text: money(totSin) }), h('td', {}), h('td', {})));
+    $('#b-table').replaceChildren(h('div', { class: 'tbl-wrap' }, h('table', { class: 'bt' }, h('thead', {}, h('tr', {}, hs)), h('tbody', {}, body))));
   }
-  ['#b-mes', '#b-tec', '#b-est'].forEach(s => $(s).addEventListener('change', () => { store.set('vc-' + s.slice(1), $(s).value); renderBandeja(); }));
 
   // Exportar con las columnas del "Formato GASTOS TECNICOS CONTROL DE CALIDAD" (solo vales aprobados)
   $('#b-export2').addEventListener('click', async () => {
@@ -1029,7 +1353,7 @@ body.locked > header.top, body.locked > main { display: none; }
       put('A' + r0, 'Total general'); put('B' + r0, tot, `SUM(B${a3}:B${r0 - 1})`, money2);
       rs['!ref'] = 'A1:E' + r0; rs['!cols'] = [38, 22, 24, 24, 16].map(w => ({ wch: w }));
       X.utils.book_append_sheet(wb, rs, 'RESUMEN');
-      saveBlob('Vales aprobados formato gastos ' + ($('#b-mes').value || 'todos') + '.xlsx', X.write(wb, { bookType: 'xlsx', type: 'array', cellDates: true }));
+      saveBlob('Vales aprobados formato gastos ' + Rng.tag('#b-rng') + '.xlsx', X.write(wb, { bookType: 'xlsx', type: 'array', cellDates: true }));
       toast('Excel generado: ' + rows.length + ' vales');
     } catch { toast('No se pudo generar el Excel (se necesita internet para cargar la librería).'); }
     finally { btn.disabled = false; btn.textContent = 'Exportar formato de gastos'; }
@@ -1047,10 +1371,10 @@ body.locked > header.top, body.locked > main { display: none; }
   }
   function renderProg() {
     if (!S.canViewAll) return;
-    const mes = $('#p-mes').value, tec = $('#p-ftec').value, fv = $('#p-fvale').value, vm = valesPorAct();
+    const rg = Rng.range('#p-rng'), tecs = Ms.vals('#p-ftec'), fvs = Ms.vals('#p-fvale'), vm = valesPorAct();
     let rows = [...S.prog.entries()].map(([id, a]) => ({ id, a, vs: vm.get(id) || [] }))
-      .filter(r => (!mes || (r.a.fecha || '').slice(0, 7) === mes) && (!tec || r.a.tecnico === tec))
-      .filter(r => !fv || (fv === 'sin' ? !r.vs.length && r.a.actividad !== 'LIBRE' : r.vs.length));
+      .filter(r => enRango(r.a.fecha, rg) && (!tecs.length || tecs.includes(r.a.tecnico)))
+      .filter(r => !fvs.length || fvs.some(fv => (fv === 'sin' ? !r.vs.length && r.a.actividad !== 'LIBRE' : r.vs.length)));
     rows.sort((x, y) => (y.a.fecha || '').localeCompare(x.a.fecha || '') || (x.a.tecnico || '').localeCompare(y.a.tecnico || '') || (x.a.laboratorio || '').localeCompare(y.a.laboratorio || ''));
     const box = $('#p-table');
     if (!rows.length) { box.replaceChildren(h('div', { class: 'empty' }, h('b', { text: S.prog.size ? 'No hay actividades con este filtro' : 'Aún no hay programación cargada' }), S.prog.size ? 'Cambia el mes, técnico o estado del vale.' : 'Agrega actividades arriba o importa el Excel ACTIVIDADES TECNICOS CALIDAD (columnas FECHA, NOMBRE - TECNICO, LABORATORIO, ACTIVIDAD).')); return; }
@@ -1073,17 +1397,39 @@ body.locked > header.top, body.locked > main { display: none; }
     box.replaceChildren(h('div', { class: 'tbl-wrap' }, h('table', {},
       h('thead', {}, h('tr', {}, ['Fecha', 'Técnico', 'Laboratorio', 'Actividad', 'Zona', 'Vale de caja', ''].map(t => h('th', { text: t })))), body)));
   }
-  ['#p-mes', '#p-ftec', '#p-fvale'].forEach(sel => $(sel).addEventListener('change', () => { store.set('vc-' + sel.slice(1), $(sel).value); renderProg(); }));
+  // Agregar actividades: se crea una por cada combinación de técnico, laboratorio y actividad
+  const ACTS_PROG = [{ v: 'REVISION', t: 'Revisión' }, { v: 'COSECHO', t: 'Cosecha' }, { v: 'LIBRE', t: 'Libre' }];
+  function progCombos() {
+    const fecha = $('#p-fecha').value, tecs = Ms.vals('#p-tec'), labs = Ms.vals('#p-lab'), acts = Ms.vals('#p-act'), out = [];
+    for (const tec of tecs) for (const act of acts) {
+      if (act === 'LIBRE') out.push({ fecha, tec, lab: 'LIBRE', act });
+      else for (const lab of labs) out.push({ fecha, tec, lab, act });
+    }
+    return out;
+  }
+  function updatePrev() {
+    const n = progCombos().length, el = $('#p-prev');
+    el.textContent = n ? `Se crearán ${n} actividad${n === 1 ? '' : 'es'}` : '';
+  }
   $('#p-form').addEventListener('submit', async e => {
     e.preventDefault();
-    const fecha = $('#p-fecha').value, tec = $('#p-tec').value, act = $('#p-act').value, lab = $('#p-lab').value.trim().toUpperCase() || (act === 'LIBRE' ? 'LIBRE' : ''), err = $('#p-err');
-    err.textContent = '';
-    if (!fecha || !tec || !lab) { err.textContent = 'Completa fecha, técnico y laboratorio.'; return; }
-    if (act !== 'LIBRE' && !zonaDe(lab)) { err.textContent = (labNombre(lab) ? 'El laboratorio ' + lab + ' aún no tiene zona asignada.' : 'El laboratorio ' + lab + ' no existe en el catálogo del sistema.') + ' Se guardará sin tarifa.'; }
+    const err = $('#p-err'); err.textContent = '';
+    const fecha = $('#p-fecha').value, combos = progCombos();
+    if (!fecha) { err.textContent = 'Elige la fecha.'; return; }
+    if (!Ms.vals('#p-tec').length) { err.textContent = 'Elige al menos un técnico.'; return; }
+    if (!Ms.vals('#p-act').length) { err.textContent = 'Elige al menos una actividad.'; return; }
+    if (!combos.length) { err.textContent = 'Elige al menos un laboratorio.'; return; }
+    const sinZona = [...new Set(combos.filter(c => c.act !== 'LIBRE' && !zonaDe(c.lab)).map(c => c.lab))];
+    const btn = $('#p-form button[type="submit"]'); btn.disabled = true;
     try {
-      await S.db.doc('programacion/' + progId(fecha, tec, lab, act)).set({ fecha, tecnico: tec, laboratorio: lab, actividad: act, creadoPor: S.uid, creado: new Date().toISOString() });
-      $('#p-lab').value = ''; toast('Actividad programada'); $('#p-lab').focus();
-    } catch (x) { err.textContent = writeErr(x); }
+      for (let i = 0; i < combos.length; i += 5) {
+        err.textContent = `Guardando ${Math.min(i + 5, combos.length)} de ${combos.length}…`;
+        await Promise.all(combos.slice(i, i + 5).map(c => S.db.doc('programacion/' + progId(c.fecha, c.tec, c.lab, c.act)).set({ fecha: c.fecha, tecnico: c.tec, laboratorio: c.lab, actividad: c.act, creadoPor: S.uid, creado: new Date().toISOString() })));
+      }
+      Ms.set('#p-lab', []); updatePrev();
+      toast(`${combos.length} actividad${combos.length === 1 ? '' : 'es'} programada${combos.length === 1 ? '' : 's'}`);
+      err.textContent = sinZona.length ? 'Sin zona asignada (se guardan sin tarifa): ' + sinZona.join(', ') + '.' : '';
+    } catch (x) { err.textContent = writeErr(x); } finally { btn.disabled = false; }
   });
   $('#p-import').addEventListener('click', () => $('#p-file').click());
   function isoDe(v) {
@@ -1137,7 +1483,7 @@ body.locked > header.top, body.locked > main { display: none; }
     try {
       const X = await loadXLSX();
       const data = bandejaRows().map(r => ({
-        'Técnico': nombreDe(r.uid, r.v), 'N° vale': r.v.numero, 'Fecha': fdate(r.v.fecha), 'Ciudad': r.v.ciudad, 'Yo / Nosotros': r.v.beneficiario,
+        'Técnico': nombreDe(quien(r.uid, r.v), r.v), 'N° vale': r.v.numero, 'Fecha': fdate(r.v.fecha), 'Ciudad': r.v.ciudad, 'Yo / Nosotros': r.v.beneficiario,
         'Recibí de': r.v.recibiDe, 'Tipo de actividad': r.v.categoria, 'Concepto': r.v.concepto, 'Actividades': (r.v.labs || []).join(', '), 'Validación': valTexto(r.v), 'Monto US$': Number(r.v.monto) || 0,
         'Valor en letras': r.v.montoLetras, 'Estado': ESTADOS[r.e], 'Vto. Bno. por': r.a && r.e !== 'pendiente' ? (S.names[r.a.por] || '') : '',
         'Fecha Vto. Bno.': r.a && r.e !== 'pendiente' ? fdate((r.a.fecha || '').slice(0, 10)) : '', 'Observación': r.a && r.e !== 'pendiente' ? (r.a.nota || '') : '',
@@ -1146,7 +1492,7 @@ body.locked > header.top, body.locked > main { display: none; }
       ws['!cols'] = [22, 8, 11, 14, 24, 16, 16, 44, 18, 26, 11, 40, 11, 22, 14, 30].map(w => ({ wch: w }));
       X.utils.book_append_sheet(wb, ws, 'Vales');
       const buf = X.write(wb, { bookType: 'xlsx', type: 'array' });
-      const mes = $('#b-mes').value || 'todos';
+      const mes = Rng.tag('#b-rng');
       saveBlob(`Vales de caja ${mes}.xlsx`, buf);
       toast('Excel generado');
     } catch (err) {
@@ -1277,8 +1623,7 @@ body.locked > header.top, body.locked > main { display: none; }
     $('#t-prog').hidden = !S.canViewAll; $('#t-bandeja').hidden = !S.canViewAll;
     $('#p-form').hidden = !S.isAdmin;
     $('#b-export').hidden = !S.canViewAll; $('#b-export2').hidden = !S.canViewAll;
-    $('#b-mes').value = store.get('vc-b-mes') ?? today().slice(0, 7);
-    $('#b-est').value = store.get('vc-b-est') || '';
+    $('#esp-bar').hidden = !S.isAdmin;
     S.ready = true;
     S.tec = S.isTec ? u.k : null;
     F.tec.replaceChildren(...ROSTER.map(r => h('option', { value: r.k, text: r.n }))); F.tec.value = S.tec || ''; $('#ln-tec').hidden = true;
@@ -1287,10 +1632,7 @@ body.locked > header.top, body.locked > main { display: none; }
     S.db.collection('programacion').where('fecha', '>=', S.progDesde).onSnapshot(snap => { S.prog = new Map(snap.docs.map(d => [d.id, d.data()])); schedule(); });
     if (S.isTec) { S.items.set(S.uid, new Map()); watchTech(S.uid); }
     if (S.canViewAll) {
-      for (const sel of ['#p-tec', '#p-ftec']) $(sel).append(...ROSTER.map(r => h('option', { value: r.k, text: r.n })));
-      $('#p-labs').replaceChildren(...Object.keys(LAB_NOM).sort().map(l => h('option', { value: l, label: l + ' · ' + LAB_NOM[l] })));
-      $('#p-fecha').value = today(); $('#p-mes').value = store.get('vc-p-mes') ?? today().slice(0, 7);
-      $('#p-fvale').value = store.get('vc-p-fvale') || '';
+      $('#p-fecha').value = today(); updatePrev();
       S.db.collection('vales').onSnapshot(snap => { for (const d of snap.docs) watchTech(d.id); schedule(); });
     }
     const lastTab = store.get('vc-tab'), ok = t => (t === 'nuevo' || t === 'mis') ? S.isTec : S.canViewAll;
@@ -1311,8 +1653,86 @@ body.locked > header.top, body.locked > main { display: none; }
     });
   }
 
+  // ---------- calendario propio, con el aspecto del sistema Naturisa ----------
+  // Se abre al hacer clic en el campo. Los campos de fecha siguen aceptando texto dd/mm/aaaa; .value no cambia (aaaa-mm-dd y aaaa-mm).
+  const Cal = (() => {
+    const MES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const pop = h('div', { class: 'cal-pop', hidden: true });
+    document.body.append(pop);
+    let cur = null;
+    const iso = dt => dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+    function close() { cur = null; pop.hidden = true; pop.replaceChildren(); }
+    function pick(v) { const el = cur.el; el.value = v; el.dispatchEvent(new Event('change', { bubbles: true })); close(); }
+    function place() {
+      const r = cur.el.getBoundingClientRect(), w = pop.offsetWidth || 268;
+      pop.style.top = (window.scrollY + r.bottom + 6) + 'px';
+      pop.style.left = Math.max(8, Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - w - 8)) + 'px';
+    }
+    function draw() {
+      const { el, mode, y, m } = cur, sel = el.value, hoy = today();
+      const nav = (d, label) => h('button', { type: 'button', class: 'cal-nv', 'aria-label': label, text: d < 0 ? '‹' : '›', onclick: () => { if (mode === 'dia') { const dt = new Date(y, m + d, 1); cur.y = dt.getFullYear(); cur.m = dt.getMonth(); } else cur.y += d; draw(); } });
+      const head = h('div', { class: 'cal-hd' }, nav(-1, mode === 'dia' ? 'Mes anterior' : 'Año anterior'), h('b', { text: mode === 'dia' ? MES[m] + ' ' + y : String(y) }), nav(1, mode === 'dia' ? 'Mes siguiente' : 'Año siguiente'));
+      let grid, foot;
+      if (mode === 'dia') {
+        const first = new Date(y, m, 1).getDay(), cells = DIAS.map(d => h('div', { class: 'cal-w', text: d }));
+        for (let i = 0; i < 42; i++) {
+          const dt = new Date(y, m, 1 - first + i);
+          if (i >= 35 && dt.getMonth() !== m) break;
+          const v = iso(dt);
+          cells.push(h('button', { type: 'button', class: 'cal-d' + (dt.getMonth() !== m ? ' o' : '') + (v === hoy ? ' t' : '') + (v === sel ? ' s' : ''), text: dt.getDate(), onclick: () => pick(v) }));
+        }
+        grid = h('div', { class: 'cal-g' }, cells);
+        const man = new Date(); man.setDate(man.getDate() + 1);
+        foot = [h('button', { type: 'button', text: 'Hoy', onclick: () => pick(hoy) }), h('button', { type: 'button', text: 'Mañana', onclick: () => pick(iso(man)) }), h('button', { type: 'button', text: 'Borrar', onclick: () => pick('') })];
+      } else {
+        grid = h('div', { class: 'cal-g m' }, MES.map((nm, i) => { const v = y + '-' + String(i + 1).padStart(2, '0'); return h('button', { type: 'button', class: 'cal-d' + (v === hoy.slice(0, 7) ? ' t' : '') + (v === sel ? ' s' : ''), text: nm.charAt(0).toUpperCase() + nm.slice(1, 3), onclick: () => pick(v) }); }));
+        foot = [h('button', { type: 'button', text: 'Este mes', onclick: () => pick(hoy.slice(0, 7)) }), h('button', { type: 'button', text: 'Borrar', onclick: () => pick('') })];
+      }
+      pop.replaceChildren(head, grid, h('div', { class: 'cal-ft' }, foot));
+      place();
+    }
+    function open(el, mode) {
+      if (cur && cur.el === el) return;
+      const x = (mode === 'dia' ? /^(\d{4})-(\d{2})-\d{2}$/ : /^(\d{4})-(\d{2})$/).exec(el.value), t = new Date();
+      cur = { el, mode, y: x ? +x[1] : t.getFullYear(), m: x ? +x[2] - 1 : t.getMonth() };
+      pop.hidden = false; draw();
+    }
+    function attach(el, mode) {
+      el.classList.add('cal-in'); el.autocomplete = 'off';
+      el.addEventListener('click', () => open(el, mode));
+      if (mode === 'mes') el.addEventListener('focus', () => open(el, mode));
+      el.addEventListener('keydown', e => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === 'Tab') close(); });
+      el.addEventListener('input', () => { if (cur && cur.el === el && mode === 'dia') { const x = /^(\d{4})-(\d{2})-\d{2}$/.exec(el.value); if (x) { cur.y = +x[1]; cur.m = +x[2] - 1; draw(); } } });
+    }
+    // Campo de mes: texto de solo lectura que muestra "noviembre de 2026" y entrega/recibe aaaa-mm en .value
+    function mesEs(el) {
+      el.type = 'text'; el.readOnly = true; el.size = 16;
+      const d = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+      let v = '';
+      Object.defineProperty(el, 'value', { get() { return v; }, set(x) { const q = /^(\d{4})-(\d{2})/.exec(x || ''); v = q ? q[1] + '-' + q[2] : ''; d.set.call(el, q ? MES[+q[2] - 1] + ' de ' + q[1] : ''); } });
+    }
+    document.addEventListener('mousedown', e => { if (cur && !pop.contains(e.target) && e.target !== cur.el) close(); });
+    window.addEventListener('resize', () => { if (cur) place(); });
+    return { attach, mesEs };
+  })();
   async function start() {
     fechaEs($('#f-fecha')); fechaEs($('#p-fecha'));
+    Cal.attach($('#f-fecha'), 'dia'); Cal.attach($('#p-fecha'), 'dia');
+    const rosterOpts = ROSTER.map(r => ({ v: r.k, t: r.n })), labOpts = Object.keys(LAB_NOM).sort().map(c => ({ v: c, t: c + ' - ' + LAB_NOM[c] }));
+    Ms.init('#p-tec', { opts: rosterOpts, ph: 'Seleccionar', all: 'Todos', onChange: updatePrev });
+    Ms.init('#p-lab', { opts: labOpts, ph: 'Seleccionar', all: 'Todos', onChange: updatePrev });
+    Ms.init('#p-act', { opts: ACTS_PROG, ph: 'Seleccionar', all: 'Todas', onChange: updatePrev });
+    $('#p-fecha').addEventListener('change', updatePrev);
+    Ms.init('#p-ftec', { opts: rosterOpts, ph: 'Todos', onChange: () => renderProg() });
+    Ms.init('#p-fvale', { opts: [{ v: 'sin', t: 'Sin vale' }, { v: 'con', t: 'Con vale' }], ph: 'Todos', key: 'vc-p-fvale', onChange: () => renderProg() });
+    Rng.init('#p-rng', { key: 'vc-p-rng', onChange: () => renderProg() });
+    Ms.init('#b-tec', { opts: [], ph: 'Todos', onChange: () => renderBandeja() });
+    Ms.init('#b-est', { opts: [{ v: 'pendiente', t: 'Pendiente' }, { v: 'aprobado', t: 'Aprobado' }, { v: 'rechazado', t: 'Rechazado' }], ph: 'Todos', key: 'vc-b-est', onChange: () => renderBandeja() });
+    Rng.init('#b-rng', { key: 'vc-b-rng', onChange: () => renderBandeja() });
+    Ms.init('#f-pers', { opts: rosterOpts, multi: false, ph: 'Elegir técnico', onChange: onEspChange });
+    Ms.init('#f-tipos', { opts: ESP_TIPOS, ph: 'Elegir tipo', all: 'Ambos', search: false, onChange: onEspChange });
+    Ms.init('#f-labs', { opts: labOpts, ph: 'Elegir laboratorios', onChange: onEspChange });
     S.progDesde = '0000-00-00';
     const err = $('#l-err');
     if (!Api.configured) err.textContent = 'Falta configurar la dirección del servidor en config.js.';
