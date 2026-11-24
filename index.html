@@ -305,18 +305,17 @@ body.locked > header.top, body.locked > main { display: none; }
 
 <div class="login" id="login">
   <form class="login-card" id="login-form" autocomplete="off">
-    <div class="brand"><b>Vale de Caja</b><span>Técnicos de Calidad · Dep. Larvas · Naturisa</span></div>
+    <div class="brand"><b>Vale de Caja</b><span>Dep. Larvas · Naturisa</span></div>
     <label class="fld">Usuario (inicial del nombre y apellido)<input id="l-user" autocomplete="username" autocapitalize="none" placeholder="Ej.: flojan"></label>
     <label class="fld">Clave<input id="l-pass" type="password" autocomplete="current-password" inputmode="numeric" placeholder="••••••"></label>
     <button class="btn" type="submit">Ingresar</button>
     <div class="err" id="l-err" role="alert"></div>
-    <p class="hint" id="l-hint">Tu usuario es la inicial de tu nombre y tu apellido, todo junto (por ejemplo, flojan). Si no tienes tu clave, pídesela al supervisor. Funciona en el computador o el celular.</p>
   </form>
 </div>
 
 <header class="top">
   <div class="top-in">
-    <div class="brand"><b>Vale de Caja</b><span>Técnicos de Calidad · Dep. Larvas · Naturisa</span></div>
+    <div class="brand"><b>Vale de Caja</b><span>Dep. Larvas · Naturisa</span></div>
     <div class="who" id="who"><span class="role" id="who-status">Conectando…</span></div>
     <nav class="tabs" role="tablist">
       <button class="tab" role="tab" id="t-nuevo" data-tab="nuevo" aria-selected="true">Nuevo vale</button>
@@ -1768,7 +1767,7 @@ body.locked > header.top, body.locked > main { display: none; }
     $('#login-form').addEventListener('submit', async e => {
       e.preventDefault(); err.textContent = '';
       const inp = norm($('#l-user').value).replace(/\s+/g, ' ').trim();
-      const u = USERS.find(x => x.u === inp.replace(/\s+/g, '')) || (inp.length > 4 && USERS.find(x => x.t.every(t => inp.includes(t))));
+      const u = USERS.find(x => x.u === inp.replace(/\s+/g, ''));
       if (!u) { err.textContent = 'Usuario o clave incorrectos. Tu usuario es la inicial del nombre y el apellido (por ejemplo, flojan).'; return; }
       const btn = $('#login-form button[type="submit"]'); btn.disabled = true;
       try {
