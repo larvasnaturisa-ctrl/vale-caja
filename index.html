@@ -481,62 +481,85 @@ body.locked > header.top, body.locked > main { display: none; }
   // Laboratorios con las siglas y nombres del sistema (get_subsidiaries + get_supplier_subsidiary LARVAS_TERCEROS). Formato: sigla|nombre|zona.
   // Zona vacía = pendiente de definir en el cuadro de tarifas; esos laboratorios salen como 'Sin zona/tarifa' y el aprobador revisa el monto.
   const LABS_RAW = [
-'LQ1|Larviquest 1|4',
+    'LQ1|Larviquest 1|4',
     'LQ2|Larviquest 2|4',
     'LQ3|Larviquest 3|1',
     'LQ4|Larviquest 4|1',
-    'ACN|ACUANORTE|',
+    'ACN|ACUANORTE|8',
     'ACT|LABORATORIO-ACUATECSA ACUACULTURA & TECNOLOGIA S.A|',
     'AQG|AQUA-GEN S.A.|',
-    'AQV|AQUANOVA S.A.S.|7',
+    'AQV-1|AQUANOVA 1|7',
+    'AQV-2|AQUANOVA 2|7',
+    'AQV-3|AQUANOVA 3|7',
+    'AQV-4|AQUANOVA 4|7',
+    'AQV-5|AQUANOVA 5|1',
     'ARP|PONCE MONROY JORGE ARTURO|',
-    'ASE|ACUESEMILLAS - SEAQUEST S.A. (AQUEST)|4',
+    'ASE|ACUESEMILLAS|4',
     'BIL|VERA ORMAZA ALIRIO MANUEL|',
-    'BMA|LABORATORIO BAMAR S.A.|',
+    'BMA-1|BAMAR 1 (Jama)|8',
+    'BMA-2|BAMAR 2 (Jama)|8',
     'BUL|BUBBALAB|',
     'CIN|CORPORACION INDUSTRIAL COMERCIAL CINCO CORPINCOMCINCO S.A.|4',
     'CMA|CULTIVOS MARINOS CULMARINSA S.A|',
-    'DTT|FLOTCORP S.A.|5',
+    'CRB|CRIADEROS DE ESPECIES BIOACUATICAS CRIESBIO S.A.|1',
+    'DTT|DOBLE T|5',
     'ECV|GUARECUCO ANDRADE SLAICER STELL NICATOR|3',
-    'ENA|LABORATORIO EUNOIA|',
+    'ENA|EUNOIA|8',
     'ESC|ESCOLAR|4',
     'FMA|FMA|6',
     'GBO|GABSO EXPORT SHRIMP S.A.S.|3',
-    'GGS|GUTIERREZ SALAZAR PAULO ANDRES|',
+    'GGS-1|GGS 1 (CHIP)|8',
+    'GGS-2|GGS 2 (BRIC)|8',
     'GN1|LABORATORIO DE LARVAS GENESIS PS LABGENPS S.A.|',
     'GN2|PENA RON BOLIVAR ANTONIO|',
     'LAG|ALVARADO GUAMAN LUIS ALFREDO|',
+    'LAR|LARVAS DE MANABI LARDEMA S.A.|8',
     'LRP|JENNY YSABEL POZO GONZABAY|',
     'MBL|NARCISO MISAEL BUSTE LOOR|',
-    'MCL|CANDEL AGUIRRE CARLOTA ELOISA|6',
+    'MCL-1|MERC. CANDEL 1|6',
+    'MCL-2|MERC. CANDEL 2|6',
     'ML1|MEGALATINA S.A.|',
     'ML2|INVERSIONES ACUICOLAS RODRIGUEZ LARA INAROLA S.A.|',
-    'MR1|PALACIOS TERAN MONICA DEL CONSUELO|5',
-    'MR2|YAGUAL VERA LARISA ISABEL|6',
-    'MRB|MACROBIO|2',
-    'NAR|NARIHUAL S.A.S.|5',
+    'MR1|MIRAMAR 1 (md1)|6',
+    'MR2|MIRAMAR 2 (MB)|5',
+    'MRB-3|MACROBIO 3|2',
+    'MRB-4|MACROBIO 4|2',
+    'MRB-5|MACROBIO 5|2',
+    'NAR-1|NARIHUALA 1|5',
+    'NAR-2|NARIHUALA 2|5',
     'OCL|OCEANLAB LABORATORIOS DEL OCEANO S.A.|1',
-    'PES|PLUSLARVA S.A.|',
-    'PR1|CIAPROLARCAM S.A.|',
+    'PES-1|PLUSLARVA 1 (ENG)|7',
+    'PES-2|PLUSLARVA 2 (ENG)|7',
+    'PES-3|PLUSLARVA 3 (MB)|5',
+    'PES-4|PLUSLARVA 4 (ENG)|7',
+    'PR1|PROLARCAM 1|3',
     'PR2|CIAPROLARCAM S.A. (BASE 2)|',
     'PR3|ORLANDO JOSELITO JIMENEZ ARGOTI (PROLARCAM BASE 3)|',
     'PR4|JIMENEZ ARGOTI ORLANDO JOSELITO|',
     'PR5|JIMENEZ APOLINARIO MICHELLE STEFANNY|',
     'PSL|PESCALAB S.A.S.|',
     'RML|RAMILARV S.A.S.|4',
-    'SEM|SEMACUA|6',
+    'SEM-1|SEMACUA 1|6',
+    'SEM-2|SEMACUA 2|6',
+    'SEM-3|SEMACUA 3|6',
+    'SEM-4|SEMACUA 4|6',
+    'SEM-5|SEMACUA 5|6',
+    'SEM-6|SEMACUA 6|6',
     'SIM|SIMECON|3',
-    'SL1|SANLAB BSO S.A.|',
-    'SL2|SANLAB EVA S.A.|',
-    'SL3|SANLAB FSA S.A.S.|',
-    'SL4|HEBER DURANGO|',
-    'SL5|SANLAB ABSA|',
-    'SL6|SANLAB ABSA|',
-    'TCS|TECNOLOGIA YSERVICIOSTECSERV S.A.|',
-    'TIB|TIBALLOSA S.A.|6',
+    'SL1|SANLAB 1|5',
+    'SL2|SANLAB 2|5',
+    'SL3|SANLAB 3|5',
+    'SL4|SANLAB 4|5',
+    'SL5|SANLAB 5|5',
+    'SL6|SANLAB 6|6',
+    'TCS-1|TECSERV 1|6',
+    'TCS-2|TECSERV 2|6',
+    'TCS-3|TECSERV 3 (MB)|5',
+    'TIB-1|TIBALLOSA 1|6',
     'VCU|VIACUA|',
     'VLZ|VELEZ GONZABAY JENNIFER ELIANA|1',
-    'YOR|ORRALA AQUINO YORDY JOSE|'
+    'YOR-1|YOR ORRALA 1|1',
+    'YOR-2|YOR ORRALA 2|5',
   ];
   const ZONA_LAB = {}, LAB_NOM = {};
   LABS_RAW.forEach(x => { const [c, n, z] = x.split('|'); LAB_NOM[c] = n; if (z) ZONA_LAB[c] = +z; });
@@ -548,14 +571,14 @@ body.locked > header.top, body.locked > main { display: none; }
     'FRANKLIN LOJAN': [15, 5, 5, 10, 25, 25, 50],
     'JINSON VERA': [15, 10, 10, 5, 15, 15, 50],
   };
-  const zonaDe = lab => { const l = (lab || '').toUpperCase().trim(); return ZONA_LAB[l] || ZONA_LAB[l.replace(/\d+$/, '')] || null; };
+  const zonaDe = lab => { const l = (lab || '').toUpperCase().trim(); return ZONA_LAB[l] || ZONA_LAB[l.replace(/-?\d+$/, '')] || null; };
   // Tope = zona más cara entre los laboratorios visitados. Solo revisiones y técnicos con tarifa.
   // Por indicación de jefatura, por ahora NO se sugieren ni validan tarifas por zona (poner en true para reactivar).
   const TARIFAS_ACTIVAS = false;
   function tope(tec, labs, tipo) {
     if (!TARIFAS_ACTIVAS || tipo !== 'REVISION' || !TARIFA[tec] || !labs.length) return { v: null, sin: [] };
     const sin = [], vals = [];
-    for (const l of labs) { const z = zonaDe(l); if (z) vals.push(TARIFA[tec][z - 1]); else sin.push(l); }
+    for (const l of labs) { const z = zonaDe(l), v = z ? TARIFA[tec][z - 1] : null; if (v != null) vals.push(v); else sin.push(l); }
     return { v: vals.length ? Math.max(...vals) : null, sin };
   }
   const ACT_TXT = { REVISION: 'Revisión', COSECHO: 'Cosecha', LIBRE: 'Libre', PEAJES: 'Peajes y alimentación' };
@@ -898,13 +921,15 @@ body.locked > header.top, body.locked > main { display: none; }
     if (!S.ready) return;
     const box = $('#f-acts'), used = usadas(), list = progDelDia();
     selActs = new Set([...selActs].filter(id => list.some(([i]) => i === id) && !used.has(id)));
+    const tipoSel = [...selActs].map(i => S.prog.get(i)?.actividad).find(Boolean) || null;   // un vale es solo de revisiones o solo de cosechas
     if (!S.tec) { box.replaceChildren(h('span', { class: 'err', text: 'Elige primero tu nombre en la lista de técnicos.' })); onSel(); return; }
-    box.replaceChildren(...(list.length ? list.map(([id, a]) => {
-      const u = used.has(id), cb = h('input', { type: 'checkbox', id: 'act-' + id, disabled: u });
+    const ambos = new Set(list.map(([, a]) => a.actividad)).size > 1;
+    box.replaceChildren(...(list.length ? [...list.map(([id, a]) => {
+      const ya = used.has(id), otro = !!tipoSel && a.actividad !== tipoSel, u = ya || otro, cb = h('input', { type: 'checkbox', id: 'act-' + id, disabled: u });
       cb.checked = selActs.has(id);
-      cb.addEventListener('change', () => { if (cb.checked) selActs.add(id); else selActs.delete(id); onSel(); });
-      return h('label', { class: 'act' + (u ? ' used' : '') }, cb, a.laboratorio, h('small', { text: (labNombre(a.laboratorio) ? labNombre(a.laboratorio) + ' · ' : '') + (ACT_TXT[a.actividad] || a.actividad) + (u ? ' · ya tiene vale' : '') }));
-    }) : [h('span', { style: 'color:var(--muted)', text: 'No hay actividades programadas para ' + tecNombre(S.tec) + ' el ' + fdate(F.fecha.value) + '.' })]));
+      cb.addEventListener('change', () => { if (cb.checked) selActs.add(id); else selActs.delete(id); renderActs(); });
+      return h('label', { class: 'act' + (u ? ' used' : '') }, cb, a.laboratorio, h('small', { text: (labNombre(a.laboratorio) ? labNombre(a.laboratorio) + ' · ' : '') + (ACT_TXT[a.actividad] || a.actividad) + (ya ? ' · ya tiene vale' : otro ? ' · otro tipo de vale' : '') }));
+    }), ambos ? h('span', { class: 'hint', style: 'flex-basis:100%', text: 'Cada vale es solo de revisiones o solo de cosechas: al marcar una, las del otro tipo se bloquean.' }) : null] : [h('span', { style: 'color:var(--muted)', text: 'No hay actividades programadas para ' + tecNombre(S.tec) + ' el ' + fdate(F.fecha.value) + '.' })]));
     onSel();
   }
   function curCtx() {
@@ -1002,6 +1027,7 @@ body.locked > header.top, body.locked > main { display: none; }
       if (!v.rubro) return ['f-tipos', 'Elige Alimentación, Peajes o ambos.'];
       if (!v.labs.length) return ['f-labs', 'Elige al menos un laboratorio.'];
     } else if (!v.tecnico) return ['f-tec', 'Elige tu nombre en la lista de técnicos.'];
+    if (!v.especial && v.tipoActividad === 'MIXTO') return ['f-acts', 'Un vale es solo de revisiones o solo de cosechas. Quita las actividades de uno de los dos tipos.'];
     if (!(v.monto > 0)) return ['f-monto', 'Ingresa el monto en dólares.'];
     if (v.monto > 5000) return ['f-monto', 'El monto supera US$ 5,000. Revisa la cifra.'];
     if (!v.ciudad) return ['f-ciudad', 'Escribe la ciudad.'];
