@@ -629,7 +629,7 @@ body.locked > header.top, body.locked > main { display: none; }
     const ids = v.actividades || [];
     const ok = ids.length > 0 && ids.every(id => {
       const a = S.prog.get(id);
-      return a ? (a.tecnico === v.tecnico && a.fecha === v.fecha) : (!!v.programada && (v.fecha || '') < S.progDesde);
+      return a ? (a.tecnico === v.tecnico && finDe(a) === v.fecha) : (!!v.programada && (v.fecha || '') < S.progDesde);
     });
     const t = tope(v.tecnico, v.labs || [], v.tipoActividad || '');
     return { prog: ok, tope: t.v, excede: t.v != null && Number(v.monto) > t.v + 0.001 };
@@ -842,6 +842,10 @@ body.locked > header.top, body.locked > main { display: none; }
     const range = s => { const st = reg.get($(s)); if (!st) return { desde: '', hasta: '' }; const [a, b] = calc(st); return { desde: a, hasta: b }; };
     return { init, range, tag: s => { const r = range(s); return r.desde || r.hasta ? (r.desde + '_a_' + r.hasta).replace(/^_a_|_a_$/g, '') : 'todos'; } };
   })();
+  // Fecha fin de una actividad programada = día en que Félix la registra + 1 día calendario. Los técnicos hacen el vale con esa fecha.
+  const isoLocal = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const sumaDias = (s, n) => { const d = new Date(s + 'T12:00:00'); d.setDate(d.getDate() + n); return isoLocal(d); };
+  const finDe = a => a.fin || (a.creado ? sumaDias(isoLocal(new Date(a.creado)), 1) : (a.fecha || ''));
   const enRango = (f, r) => (!r.desde || (f || '') >= r.desde) && (!r.hasta || (f || '') <= r.hasta);
 
   // ---------- form ----------
@@ -914,7 +918,7 @@ body.locked > header.top, body.locked > main { display: none; }
     return set;
   }
   function progDelDia() {
-    return [...S.prog.entries()].filter(([, a]) => a.tecnico === S.tec && a.fecha === F.fecha.value && a.actividad !== 'LIBRE')
+    return [...S.prog.entries()].filter(([, a]) => a.tecnico === S.tec && finDe(a) === F.fecha.value && a.actividad !== 'LIBRE')
       .sort((x, y) => (x[1].laboratorio || '').localeCompare(y[1].laboratorio || ''));
   }
   function renderActs() {
@@ -929,7 +933,7 @@ body.locked > header.top, body.locked > main { display: none; }
       cb.checked = selActs.has(id);
       cb.addEventListener('change', () => { if (cb.checked) selActs.add(id); else selActs.delete(id); renderActs(); });
       return h('label', { class: 'act' + (u ? ' used' : '') }, cb, a.laboratorio, h('small', { text: (labNombre(a.laboratorio) ? labNombre(a.laboratorio) + ' · ' : '') + (ACT_TXT[a.actividad] || a.actividad) + (ya ? ' · ya tiene vale' : otro ? ' · otro tipo de vale' : '') }));
-    }), ambos ? h('span', { class: 'hint', style: 'flex-basis:100%', text: 'Cada vale es solo de revisiones o solo de cosechas: al marcar una, las del otro tipo se bloquean.' }) : null] : [h('span', { style: 'color:var(--muted)', text: 'No hay actividades programadas para ' + tecNombre(S.tec) + ' el ' + fdate(F.fecha.value) + '.' })]));
+    }), ambos ? h('span', { class: 'hint', style: 'flex-basis:100%', text: 'Cada vale es solo de revisiones o solo de cosechas: al marcar una, las del otro tipo se bloquean.' }) : null] : [h('span', { style: 'color:var(--muted)', text: 'No hay actividades de ' + tecNombre(S.tec) + ' con fecha fin ' + fdate(F.fecha.value) + '.' })]));
     onSel();
   }
   function curCtx() {
@@ -962,7 +966,7 @@ body.locked > header.top, body.locked > main { display: none; }
     if (S.esp) return { cls: 'ok', msg: '', needJust: false, c: { ids: [], labs: [], tipo: '', revs: [], cos: [], t: { v: null, sin: [] } } };
     const c = curCtx(), monto = Number(F.monto.value) || 0;
     if (!S.tec) return { cls: 'warn', msg: 'Elige tu nombre para validar contra la programación.', needJust: false, c };
-    if (!c.ids.length) return { cls: 'warn', msg: progDelDia().length ? 'Marca arriba las actividades que realizaste. Si fue otra distinta, regístralo con justificación y el aprobador lo revisará aparte.' : 'Sin actividad programada para esta fecha. Puedes registrarlo, pero necesita justificación y el aprobador lo revisará aparte.', needJust: true, c };
+    if (!c.ids.length) return { cls: 'warn', msg: progDelDia().length ? 'Marca arriba las actividades que realizaste. Si fue otra distinta, regístralo con justificación y el aprobador lo revisará aparte.' : 'No hay actividades con fecha fin ' + fdate(F.fecha.value) + '. Puedes registrarlo, pero necesita justificación y el aprobador lo revisará aparte.', needJust: true, c };
     const parts = ['Programada: ' + c.labs.join(', ') + ' (' + (c.tipo === 'MIXTO' ? 'Mixta' : ACT_TXT[c.tipo]) + ')'];
     let cls = 'ok', needJust = false;
     if (c.t.v != null) {
@@ -1448,11 +1452,11 @@ body.locked > header.top, body.locked > main { display: none; }
         ? h('span', {}, r.vs.map(x => h('span', { class: 'vchip ok', text: pad4(x.v.numero) + ' · ' + ESTADOS[estadoDe(x.uid, x.id)] })))
         : h('span', { class: 'vchip warn', text: 'Sin vale' });
       return h('tr', { style: 'cursor:default' },
-        h('td', { text: fdate(r.a.fecha) }), h('td', { text: tecNombre(r.a.tecnico) }), h('td', { text: r.a.laboratorio || '', title: labNombre(r.a.laboratorio) }),
+        h('td', { text: fdate(r.a.fecha) }), h('td', { text: fdate(finDe(r.a)) }), h('td', { text: tecNombre(r.a.tecnico) }), h('td', { text: r.a.laboratorio || '', title: labNombre(r.a.laboratorio) }),
         h('td', { text: ACT_TXT[r.a.actividad] || r.a.actividad || '' }), h('td', { text: z ? 'S' + z : '—' }), h('td', {}, vale), h('td', {}, S.isAdmin ? del : null));
     }));
     box.replaceChildren(h('div', { class: 'tbl-wrap' }, h('table', { class: 'bt' },
-      h('thead', {}, h('tr', {}, ['Fecha', 'Técnico', 'Laboratorio', 'Actividad', 'Zona', 'Vale de caja', ''].map(t => h('th', { text: t })))), body)));
+      h('thead', {}, h('tr', {}, ['Fecha', 'Fecha fin', 'Técnico', 'Laboratorio', 'Actividad', 'Zona', 'Vale de caja', ''].map(t => h('th', { text: t })))), body)));
   }
   // Agregar actividades: se crea una por cada combinación de técnico, laboratorio y actividad
   const ACTS_PROG = [{ v: 'REVISION', t: 'Revisión' }, { v: 'COSECHO', t: 'Cosecha' }, { v: 'LIBRE', t: 'Libre' }];
@@ -1480,7 +1484,7 @@ body.locked > header.top, body.locked > main { display: none; }
     try {
       for (let i = 0; i < combos.length; i += 5) {
         err.textContent = `Guardando ${Math.min(i + 5, combos.length)} de ${combos.length}…`;
-        await Promise.all(combos.slice(i, i + 5).map(c => S.db.doc('programacion/' + progId(c.fecha, c.tec, c.lab, c.act)).set({ fecha: c.fecha, tecnico: c.tec, laboratorio: c.lab, actividad: c.act, creadoPor: S.uid, creado: new Date().toISOString() })));
+        await Promise.all(combos.slice(i, i + 5).map(c => S.db.doc('programacion/' + progId(c.fecha, c.tec, c.lab, c.act)).set({ fecha: c.fecha, tecnico: c.tec, laboratorio: c.lab, actividad: c.act, creadoPor: S.uid, creado: new Date().toISOString(), fin: sumaDias(today(), 1) })));
       }
       Ms.set('#p-lab', []); updatePrev();
       toast(`${combos.length} actividad${combos.length === 1 ? '' : 'es'} programada${combos.length === 1 ? '' : 's'}`);
@@ -1522,7 +1526,7 @@ body.locked > header.top, body.locked > main { display: none; }
       let i = 0;
       for (const [id, d] of docs) {
         msg.textContent = 'Guardando ' + (++i) + ' de ' + docs.size + '…';
-        await S.db.doc('programacion/' + id).set({ ...d, creadoPor: S.uid, creado: new Date().toISOString() });
+        await S.db.doc('programacion/' + id).set({ ...d, creadoPor: S.uid, creado: new Date().toISOString(), fin: sumaDias(today(), 1) });
       }
       msg.textContent = '';
       toast('Importadas ' + docs.size + ' actividades' + (skip ? ' · ' + skip + ' filas omitidas (técnico o dato no reconocido)' : ''));
