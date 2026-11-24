@@ -296,11 +296,11 @@ body.locked > header.top, body.locked > main { display: none; }
 <div class="login" id="login">
   <form class="login-card" id="login-form" autocomplete="off">
     <div class="brand"><b>Vale de Caja</b><span>Técnicos de Calidad · Dep. Larvas · Naturisa</span></div>
-    <label class="fld">Usuario (nombre y apellido)<input id="l-user" autocomplete="username" placeholder="Ej.: Franklin Lojan"></label>
+    <label class="fld">Usuario (inicial del nombre y apellido)<input id="l-user" autocomplete="username" autocapitalize="none" placeholder="Ej.: flojan"></label>
     <label class="fld">Clave<input id="l-pass" type="password" autocomplete="current-password" inputmode="numeric" placeholder="••••••"></label>
     <button class="btn" type="submit">Ingresar</button>
     <div class="err" id="l-err" role="alert"></div>
-    <p class="hint" id="l-hint">Escribe tu nombre y apellido y tu clave. Si no la tienes, pídesela al supervisor. Funciona en el computador o el celular.</p>
+    <p class="hint" id="l-hint">Tu usuario es la inicial de tu nombre y tu apellido, todo junto (por ejemplo, flojan). Si no tienes tu clave, pídesela al supervisor. Funciona en el computador o el celular.</p>
   </form>
 </div>
 
@@ -459,11 +459,11 @@ body.locked > header.top, body.locked > main { display: none; }
 
   // ---------- catálogos (Cuadro valores movilización, hoja TARIFA REVISIONES) ----------
   const ROSTER = [
-    { k: 'FRANKLIN LOJAN', n: 'Franklin Lojan', t: ['franklin', 'lojan'] },
-    { k: 'HUMBERTO REYES', n: 'Humberto Reyes', t: ['humberto', 'reyes'] },
-    { k: 'YORDAN URETA', n: 'Yordan Ureta', t: ['yordan', 'ureta'] },
-    { k: 'JINSON VERA', n: 'Jinson Vera', t: ['jinson', 'vera'] },
-    { k: 'FELIX RODRIGUEZ', n: 'Félix Rodríguez', t: ['felix', 'rodriguez'] },
+    { k: 'FRANKLIN LOJAN', n: 'Franklin Lojan', u: 'flojan', t: ['franklin', 'lojan'] },
+    { k: 'HUMBERTO REYES', n: 'Humberto Reyes', u: 'hreyes', t: ['humberto', 'reyes'] },
+    { k: 'YORDAN URETA', n: 'Yordan Ureta', u: 'yureta', t: ['yordan', 'ureta'] },
+    { k: 'JINSON VERA', n: 'Jinson Vera', u: 'jvera', t: ['jinson', 'vera'] },
+    { k: 'FELIX RODRIGUEZ', n: 'Félix Rodríguez', u: 'frodriguez', t: ['felix', 'rodriguez'] },
   ];
   const norm = s => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const matchTec = name => { const n = norm(name); return (ROSTER.find(r => r.t.every(t => n.includes(t))) || {}).k || null; };
@@ -1501,7 +1501,7 @@ body.locked > header.top, body.locked > main { display: none; }
   });
 
   // ---------- usuarios y roles ----------
-  const USERS = [...ROSTER, { k: 'DAYANA MOROCHO', n: 'Dayana Morocho', t: ['dayana', 'morocho'] }, { k: 'KELLER HERRERA', n: 'Keller Herrera', t: ['keller', 'herrera'] }];
+  const USERS = [...ROSTER, { k: 'DAYANA MOROCHO', n: 'Dayana Morocho', u: 'djmorocho', t: ['dayana', 'morocho'] }, { k: 'KELLER HERRERA', n: 'Keller Herrera', u: 'kherrera', t: ['keller', 'herrera'] }];
   const ROL_TXT = { tecnico: 'Técnico', supervisor: 'Supervisor', revisor: 'Revisión', aprobador: 'Aprobador' };
   const uidOf = k => k.replace(/ /g, '_');
   const FULL = { 'FELIX RODRIGUEZ': 'FELIX ENRIQUE RODRIGUEZ GONZABAY', 'FRANKLIN LOJAN': 'FRANKLIN ANIBAL LOJAN GRANDA', 'HUMBERTO REYES': 'HUMBERTO RAFAEL REYES SUAREZ', 'JINSON VERA': 'JINSON MANUEL VERA REYES', 'YORDAN URETA': 'URETA MACAY YORDAN JAVIER' };
@@ -1739,8 +1739,8 @@ body.locked > header.top, body.locked > main { display: none; }
     $('#login-form').addEventListener('submit', async e => {
       e.preventDefault(); err.textContent = '';
       const inp = norm($('#l-user').value).replace(/\s+/g, ' ').trim();
-      const u = inp.length > 4 && USERS.find(x => x.t.every(t => inp.includes(t)));
-      if (!u) { err.textContent = 'Usuario o clave incorrectos. Escribe tu nombre y apellido.'; return; }
+      const u = USERS.find(x => x.u === inp.replace(/\s+/g, '')) || (inp.length > 4 && USERS.find(x => x.t.every(t => inp.includes(t))));
+      if (!u) { err.textContent = 'Usuario o clave incorrectos. Tu usuario es la inicial del nombre y el apellido (por ejemplo, flojan).'; return; }
       const btn = $('#login-form button[type="submit"]'); btn.disabled = true;
       try {
         const me = await Api.login(u.k, $('#l-pass').value);
