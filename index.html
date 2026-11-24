@@ -255,6 +255,16 @@ tbody tr:hover { background: color-mix(in srgb, var(--paper) 60%, transparent); 
 .bt tr.sel td { background: color-mix(in srgb, var(--ink) 10%, var(--field)); }
 .bt tr.tot td { font-weight: 600; background: var(--paper); cursor: default; }
 
+/* ---------- tablas anchas con cuadrícula (Programación y Bandeja) ---------- */
+body.wide .wrap, body.wide .top-in { max-width: min(1760px, 98vw); }
+.bt { border-collapse: collapse; font-size: 13.5px; }
+.bt th { border: 1px solid #0f2a4a; padding: 7px 8px; white-space: nowrap; font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 13.5px; }
+.bt td { border: 1px solid var(--rule); padding: 5px 8px; white-space: nowrap; }
+.bt td.wrap { white-space: normal; min-width: 280px; max-width: 560px; }
+.bt tbody tr:hover td { background: color-mix(in srgb, var(--ink) 8%, var(--field)); }
+.bt tr.sel td { background: #5e92c7; color: #fff; }
+.bt tr.tot td { background: var(--paper); color: var(--text); }
+.bt + * , .tbl-wrap:has(.bt) { border-radius: 4px; }
 /* ---------- login ---------- */
 body.locked > header.top, body.locked > main { display: none; }
 .login { position: fixed; inset: 0; z-index: 40; background: var(--ground); display: grid; place-items: center; padding: 16px; overflow-y: auto; }
@@ -645,6 +655,7 @@ body.locked > header.top, body.locked > main { display: none; }
     for (const b of document.querySelectorAll('.tab')) b.setAttribute('aria-selected', String(b.dataset.tab === t));
     for (const s of ['nuevo', 'mis', 'prog', 'bandeja']) $('#tab-' + s).hidden = s !== t;
     store.set('vc-tab', t);
+    document.body.classList.toggle('wide', t === 'prog' || t === 'bandeja' || t === 'mis');
     if (t === 'nuevo') { requestAnimationFrame(pad.resize); renderActs(); }
   }
   document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
@@ -1142,29 +1153,48 @@ body.locked > header.top, body.locked > main { display: none; }
       h('span', { class: 'pill p-' + est, text: ESTADOS[est] }));
   }
 
+  // Encabezado de columna con filtro (embudo y lista con casillas), igual que en la bandeja
+  const thFiltro = (name, k, flt, base, f, rerender, cls) => {
+    const act = (flt[k] || []).length, b = h('button', { type: 'button', class: 'fbtn' + (act ? ' on' : ''), 'aria-label': 'Filtrar ' + name });
+    b.innerHTML = FUNNEL;
+    b.addEventListener('click', e => {
+      e.stopPropagation();
+      const opts = [...new Set(base.map(f))].sort((x, y) => x.localeCompare(y, 'es', { numeric: true })).map(v => ({ v, t: v || '—' }));
+      Pop.show(b, { opts, sel: flt[k] || [], multi: true, onChange: v => { flt[k] = v; rerender(); } });
+    });
+    return h('th', { class: cls || null }, h('div', { class: 'th-f' }, h('span', { text: name }), b));
+  };
+  const MIS = { flt: {} };
+  const MISCOLS = [
+    ['n', 'N°', r => String(r.v.numero || 0).padStart(4, '0')],
+    ['f', 'Fecha', r => fdate(r.v.fecha)],
+    ['c', 'Ciudad', r => r.v.ciudad || ''],
+    ['t', 'Tipo', r => r.v.categoria || ''],
+    ['o', 'Concepto', r => r.v.concepto || ''],
+    ['m', 'Monto', r => money(r.v.monto)],
+    ['e', 'Estado', r => ESTADOS[r.e]],
+  ];
   function renderMis() {
     const box = $('#mis-list');
     if (!S.ready) { box.replaceChildren(h('div', { class: 'empty' }, h('b', { text: 'Tus vales aparecerán aquí' }), 'Entra con tu cuenta para ver los vales que registraste.')); $('#mis-sum').textContent = ''; return; }
     const m = S.items.get(S.uid) || new Map();
-    const list = [...m.entries()].sort((a, b) => (b[1].fecha || '').localeCompare(a[1].fecha || '') || (b[1].numero || 0) - (a[1].numero || 0));
-    $('#ct-mis').textContent = list.length ? String(list.length) : '';
-    if (!list.length) { box.replaceChildren(h('div', { class: 'empty' }, h('b', { text: 'Aún no registras vales' }), 'Llena el formulario en "Nuevo vale", fírmalo y envíalo. Aquí verás si el supervisor lo aprobó.')); $('#mis-sum').textContent = ''; return; }
+    const base = [...m.entries()].map(([id, v]) => ({ id, v, e: estadoDe(S.uid, id) }));
+    $('#ct-mis').textContent = base.length ? String(base.length) : '';
+    if (!base.length) { box.replaceChildren(h('div', { class: 'empty' }, h('b', { text: 'Aún no registras vales' }), 'Llena el formulario en "Nuevo vale", fírmalo y envíalo. Aquí verás si el supervisor lo aprobó.')); $('#mis-sum').textContent = ''; return; }
     let pend = 0, porCobrar = 0;
-    const groups = new Map();
-    for (const [id, v] of list) {
-      const k = (v.fecha || '').slice(0, 7) || 'sin-fecha';
-      if (!groups.has(k)) groups.set(k, []);
-      groups.get(k).push([id, v]);
-      const e = estadoDe(S.uid, id);
-      if (e === 'pendiente') pend++;
-      if (e === 'aprobado') porCobrar += Number(v.monto) || 0;
-    }
+    for (const r of base) { if (r.e === 'pendiente') pend++; if (r.e === 'aprobado') porCobrar += Number(r.v.monto) || 0; }
     $('#mis-sum').textContent = `${pend} pendiente${pend === 1 ? '' : 's'} · ${money(porCobrar)} aprobado`;
-    box.replaceChildren(...[...groups].map(([k, rows]) => h('div', { class: 'month' },
-      h('div', { class: 'month-h' }, h('span', { text: k === 'sin-fecha' ? 'Sin fecha' : monthLabel(k) }), h('span', { text: money(rows.reduce((s, [, v]) => s + (Number(v.monto) || 0), 0)) })),
-      rows.map(([id, v]) => filaVale(S.uid, id, v)))));
+    const rows = base.filter(r => MISCOLS.every(([k, , f]) => { const s = MIS.flt[k]; return !s || !s.length || s.includes(f(r)); }))
+      .sort((a, b) => (b.v.fecha || '').localeCompare(a.v.fecha || '') || (b.v.numero || 0) - (a.v.numero || 0));
+    const hs = MISCOLS.map(([k, name, f]) => thFiltro(name, k, MIS.flt, base, f, renderMis, k === 'n' || k === 'm' ? 'num' : null));
+    const body = rows.map(r => h('tr', { onclick: () => openDetail(S.uid, r.id) },
+      h('td', { class: 'num', text: String(r.v.numero || 0).padStart(4, '0') }), h('td', { text: fdate(r.v.fecha) }), h('td', { text: r.v.ciudad || '' }),
+      h('td', { text: r.v.categoria || '' }), h('td', { class: 'wrap', text: r.v.concepto || '' }), h('td', { class: 'num', text: money(r.v.monto) }),
+      h('td', {}, h('span', { class: 'pill p-' + r.e, text: ESTADOS[r.e] }))));
+    if (!rows.length) body.push(h('tr', {}, h('td', { colspan: String(MISCOLS.length), class: 'wrap', style: 'text-align:center;color:var(--muted)', text: 'Ningún vale coincide con los filtros de las columnas.' })));
+    else body.push(h('tr', { class: 'tot', style: 'cursor:default' }, h('td', { text: `Total ${rows.length}` }), h('td', {}), h('td', {}), h('td', {}), h('td', { class: 'wrap', text: 'incluye rechazados' }), h('td', { class: 'num', text: money(rows.reduce((s, r) => s + (Number(r.v.monto) || 0), 0)) }), h('td', {})));
+    box.replaceChildren(h('div', { class: 'tbl-wrap' }, h('table', { class: 'bt' }, h('thead', {}, h('tr', {}, hs)), h('tbody', {}, body))));
   }
-
   // ---------- bandeja de aprobación: filtros por columna y aprobación masiva (solo el aprobador) ----------
   const B = { flt: {}, sel: new Set(), mode: null, note: '', busy: false };
   const quien = (uid, v) => (v.especial && v.tecnico ? uidOf(v.tecnico) : uid);
@@ -1394,7 +1424,7 @@ body.locked > header.top, body.locked > main { display: none; }
         h('td', { text: fdate(r.a.fecha) }), h('td', { text: tecNombre(r.a.tecnico) }), h('td', { text: r.a.laboratorio || '', title: labNombre(r.a.laboratorio) }),
         h('td', { text: ACT_TXT[r.a.actividad] || r.a.actividad || '' }), h('td', { text: z ? 'S' + z : '—' }), h('td', {}, vale), h('td', {}, S.isAdmin ? del : null));
     }));
-    box.replaceChildren(h('div', { class: 'tbl-wrap' }, h('table', {},
+    box.replaceChildren(h('div', { class: 'tbl-wrap' }, h('table', { class: 'bt' },
       h('thead', {}, h('tr', {}, ['Fecha', 'Técnico', 'Laboratorio', 'Actividad', 'Zona', 'Vale de caja', ''].map(t => h('th', { text: t })))), body)));
   }
   // Agregar actividades: se crea una por cada combinación de técnico, laboratorio y actividad
@@ -1419,7 +1449,6 @@ body.locked > header.top, body.locked > main { display: none; }
     if (!Ms.vals('#p-tec').length) { err.textContent = 'Elige al menos un técnico.'; return; }
     if (!Ms.vals('#p-act').length) { err.textContent = 'Elige al menos una actividad.'; return; }
     if (!combos.length) { err.textContent = 'Elige al menos un laboratorio.'; return; }
-    const sinZona = [...new Set(combos.filter(c => c.act !== 'LIBRE' && !zonaDe(c.lab)).map(c => c.lab))];
     const btn = $('#p-form button[type="submit"]'); btn.disabled = true;
     try {
       for (let i = 0; i < combos.length; i += 5) {
@@ -1428,7 +1457,7 @@ body.locked > header.top, body.locked > main { display: none; }
       }
       Ms.set('#p-lab', []); updatePrev();
       toast(`${combos.length} actividad${combos.length === 1 ? '' : 'es'} programada${combos.length === 1 ? '' : 's'}`);
-      err.textContent = sinZona.length ? 'Sin zona asignada (se guardan sin tarifa): ' + sinZona.join(', ') + '.' : '';
+      err.textContent = '';
     } catch (x) { err.textContent = writeErr(x); } finally { btn.disabled = false; }
   });
   $('#p-import').addEventListener('click', () => $('#p-file').click());
