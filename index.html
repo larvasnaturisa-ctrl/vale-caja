@@ -265,6 +265,7 @@ body.wide .wrap, body.wide .top-in { max-width: min(1760px, 98vw); }
 .bt tr.sel td { background: #5e92c7; color: #fff; }
 .bt tr.tot td { background: var(--paper); color: var(--text); }
 .bt + * , .tbl-wrap:has(.bt) { border-radius: 4px; }
+#f-concepto[readonly] { cursor: default; }
 /* ---------- login ---------- */
 body.locked > header.top, body.locked > main { display: none; }
 .login { position: fixed; inset: 0; z-index: 40; background: var(--ground); display: grid; place-items: center; padding: 16px; overflow-y: auto; }
@@ -862,11 +863,12 @@ body.locked > header.top, body.locked > main { display: none; }
     if (on) {
       F.benef.value = 'FELIX RODRIGUEZ';
       $('#f-check').hidden = true; $('#ln-just').hidden = true; $('#ln-rubro').hidden = true;
-      if (S.autoConcepto) F.concepto.value = conceptoEsp();
+      F.concepto.readOnly = true; F.concepto.value = conceptoEsp();   // en este vale el concepto no se escribe: siempre sale de lo elegido
     } else {
+      F.concepto.readOnly = false;
       if (S.espPrev) F.benef.value = store.get('vc-benef') || S.me?.name || '';
       $('#f-check').hidden = false; syncRubro();
-      if (S.espPrev && S.autoConcepto) F.concepto.value = '';
+      if (S.espPrev) { F.concepto.value = ''; S.autoConcepto = true; }
       renderActs();
     }
     S.espPrev = on;
