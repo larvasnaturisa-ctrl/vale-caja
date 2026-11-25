@@ -619,7 +619,7 @@ body.locked > header.top, body.locked > main { display: none; }
     for (const l of labs) { const z = zonaDe(l), v = z ? TARIFA[tec][z - 1] : null; if (v != null) vals.push(v); else sin.push(l); }
     return { v: vals.length ? Math.max(...vals) : null, sin };
   }
-  const ACT_TXT = { REVISION: 'Revisión', COSECHO: 'Cosecha', LIBRE: 'Libre', PEAJES: 'Peajes y alimentación' };
+  const ACT_TXT = { REVISION: 'Revisión', COSECHO: 'Cosecha', LIBRE: 'Libre', VACACIONES: 'Vacaciones', PEAJES: 'Peajes y alimentación' };
 
   // Monto en letras (español, formato contable: "VEINTICINCO CON 50/100")
   const U = ['', 'UNO', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE', 'DIEZ', 'ONCE', 'DOCE', 'TRECE', 'CATORCE', 'QUINCE', 'DIECISÉIS', 'DIECISIETE', 'DIECIOCHO', 'DIECINUEVE', 'VEINTE', 'VEINTIUNO', 'VEINTIDÓS', 'VEINTITRÉS', 'VEINTICUATRO', 'VEINTICINCO', 'VEINTISÉIS', 'VEINTISIETE', 'VEINTIOCHO', 'VEINTINUEVE'];
@@ -956,7 +956,7 @@ body.locked > header.top, body.locked > main { display: none; }
     return set;
   }
   function progDelDia() {
-    return [...S.prog.entries()].filter(([, a]) => a.tecnico === S.tec && finDe(a) === F.fecha.value && a.actividad !== 'LIBRE')
+    return [...S.prog.entries()].filter(([, a]) => a.tecnico === S.tec && finDe(a) === F.fecha.value && a.actividad !== 'LIBRE' && a.actividad !== 'VACACIONES')
       .sort((x, y) => (x[1].laboratorio || '').localeCompare(y[1].laboratorio || ''));
   }
   function renderActs() {
@@ -1502,7 +1502,7 @@ body.locked > header.top, body.locked > main { display: none; }
     ['l', 'Laboratorio', r => r.a.laboratorio || ''],
     ['a', 'Actividad', r => ACT_TXT[r.a.actividad] || r.a.actividad || ''],
     ['z', 'Zona', r => { const z = zonaDe(r.a.laboratorio); return z ? 'S' + z : '—'; }],
-    ['v', 'Vale de caja', r => (r.a.actividad === 'LIBRE' ? '—' : (r.vs.length ? 'Con vale' : 'Sin vale'))],
+    ['v', 'Vale de caja', r => (r.a.actividad === 'LIBRE' || r.a.actividad === 'VACACIONES' ? '—' : (r.vs.length ? 'Con vale' : 'Sin vale'))],
   ];
   function renderProg() {
     if (!S.canViewAll) return;
@@ -1521,7 +1521,7 @@ body.locked > header.top, body.locked > main { display: none; }
         clearTimeout(tm); del.disabled = true;
         try { await S.db.doc('programacion/' + r.id).delete(); toast('Actividad quitada de la programación'); } catch (e) { toast(writeErr(e)); del.disabled = false; }
       });
-      const vale = r.a.actividad === 'LIBRE' ? '—' : r.vs.length
+      const vale = r.a.actividad === 'LIBRE' || r.a.actividad === 'VACACIONES' ? '—' : r.vs.length
         ? h('span', {}, r.vs.map(x => h('span', { class: 'vchip ok', text: pad4(x.v.numero) + ' · ' + ESTADOS[estadoDe(x.uid, x.id)] })))
         : h('span', { class: 'vchip warn', text: 'Sin vale' });
       return h('tr', { style: 'cursor:default' },
@@ -1663,11 +1663,11 @@ body.locked > header.top, body.locked > main { display: none; }
   menuExportar($('#p-exp'), [['xl', 'Exportar a Excel', () => exportarExcelTabla(datosProg())], ['pdf', 'Exportar a PDF', () => exportarPDF(datosProg())]]);
   menuExportar($('#m-exp'), [['xl', 'Exportar a Excel', () => exportarExcelTabla(datosMis())], ['pdf', 'Exportar a PDF', () => exportarPDF(datosMis())]]);
   // Agregar actividades: se crea una por cada combinación de técnico, laboratorio y actividad
-  const ACTS_PROG = [{ v: 'REVISION', t: 'Revisión' }, { v: 'COSECHO', t: 'Cosecha' }, { v: 'LIBRE', t: 'Libre' }];
+  const ACTS_PROG = [{ v: 'REVISION', t: 'Revisión' }, { v: 'COSECHO', t: 'Cosecha' }, { v: 'LIBRE', t: 'Libre' }, { v: 'VACACIONES', t: 'Vacaciones' }];
   function progCombos() {
     const fecha = $('#p-fecha').value, tecs = Ms.vals('#p-tec'), labs = Ms.vals('#p-lab'), acts = Ms.vals('#p-act'), out = [];
     for (const tec of tecs) for (const act of acts) {
-      if (act === 'LIBRE') out.push({ fecha, tec, lab: 'LIBRE', act });
+      if (act === 'LIBRE' || act === 'VACACIONES') out.push({ fecha, tec, lab: act, act });
       else for (const lab of labs) out.push({ fecha, tec, lab, act });
     }
     return out;
@@ -1720,8 +1720,8 @@ body.locked > header.top, body.locked > main { display: none; }
         for (const r of rows.slice(hi + 1)) {
           if (r.every(c => c == null || c === '')) continue;
           const fecha = isoDe(r[cf]), tec = matchTec(r[ct]), a = norm(r[ca]);
-          const act = a.startsWith('rev') ? 'REVISION' : a.startsWith('cos') ? 'COSECHO' : a.startsWith('lib') ? 'LIBRE' : null;
-          const lab = String(cl >= 0 && r[cl] ? r[cl] : (act === 'LIBRE' ? 'LIBRE' : '')).trim().toUpperCase();
+          const act = a.startsWith('rev') ? 'REVISION' : a.startsWith('cos') ? 'COSECHO' : a.startsWith('lib') ? 'LIBRE' : a.startsWith('vac') ? 'VACACIONES' : null;
+          const lab = String(cl >= 0 && r[cl] ? r[cl] : (act === 'LIBRE' || act === 'VACACIONES' ? act : '')).trim().toUpperCase();
           if (!fecha || !tec || !act || !lab) { skip++; continue; }
           docs.set(progId(fecha, tec, lab, act), { fecha, tecnico: tec, laboratorio: lab, actividad: act });
         }
