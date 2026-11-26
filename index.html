@@ -880,10 +880,10 @@ body.locked > header.top, body.locked > main { display: none; }
     const range = s => { const st = reg.get($(s)); if (!st) return { desde: '', hasta: '' }; const [a, b] = calc(st); return { desde: a, hasta: b }; };
     return { init, range, tag: s => { const r = range(s); return r.desde || r.hasta ? (r.desde + '_a_' + r.hasta).replace(/^_a_|_a_$/g, '') : 'todos'; } };
   })();
-  // Fecha fin de una actividad programada = día en que Félix la registra + 1 día calendario. Los técnicos hacen el vale con esa fecha.
+  // Fecha fin de una actividad programada = fecha de la actividad + 1 día calendario (sin importar cuándo se registró). Los técnicos hacen el vale con esa fecha.
   const isoLocal = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   const sumaDias = (s, n) => { const d = new Date(s + 'T12:00:00'); d.setDate(d.getDate() + n); return isoLocal(d); };
-  const finDe = a => a.fin || (a.creado ? sumaDias(isoLocal(new Date(a.creado)), 1) : (a.fecha || ''));
+  const finDe = a => (a.fecha ? sumaDias(a.fecha, 1) : '');   // fecha fin = fecha de la actividad + 1 día
   const enRango = (f, r) => (!r.desde || (f || '') >= r.desde) && (!r.hasta || (f || '') <= r.hasta);
 
   // ---------- form ----------
@@ -1688,7 +1688,7 @@ body.locked > header.top, body.locked > main { display: none; }
     try {
       for (let i = 0; i < combos.length; i += 5) {
         err.textContent = `Guardando ${Math.min(i + 5, combos.length)} de ${combos.length}…`;
-        await Promise.all(combos.slice(i, i + 5).map(c => S.db.doc('programacion/' + progId(c.fecha, c.tec, c.lab, c.act)).set({ fecha: c.fecha, tecnico: c.tec, laboratorio: c.lab, actividad: c.act, creadoPor: S.uid, creado: new Date().toISOString(), fin: sumaDias(today(), 1) })));
+        await Promise.all(combos.slice(i, i + 5).map(c => S.db.doc('programacion/' + progId(c.fecha, c.tec, c.lab, c.act)).set({ fecha: c.fecha, tecnico: c.tec, laboratorio: c.lab, actividad: c.act, creadoPor: S.uid, creado: new Date().toISOString(), fin: sumaDias(c.fecha, 1) })));
       }
       Ms.set('#p-lab', []); updatePrev();
       toast(`${combos.length} actividad${combos.length === 1 ? '' : 'es'} programada${combos.length === 1 ? '' : 's'}`);
@@ -1730,7 +1730,7 @@ body.locked > header.top, body.locked > main { display: none; }
       let i = 0;
       for (const [id, d] of docs) {
         msg.textContent = 'Guardando ' + (++i) + ' de ' + docs.size + '…';
-        await S.db.doc('programacion/' + id).set({ ...d, creadoPor: S.uid, creado: new Date().toISOString(), fin: sumaDias(today(), 1) });
+        await S.db.doc('programacion/' + id).set({ ...d, creadoPor: S.uid, creado: new Date().toISOString(), fin: sumaDias(d.fecha, 1) });
       }
       msg.textContent = '';
       toast('Importadas ' + docs.size + ' actividades' + (skip ? ' · ' + skip + ' filas omitidas (técnico o dato no reconocido)' : ''));
